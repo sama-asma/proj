@@ -1,0 +1,163 @@
+/* Reset des styles par défaut */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Style général du body */
+body {
+    font-family: 'Poppins', sans-serif;
+    /* background: linear-gradient(135deg, #a8edea, #fed6e3); */
+    background: linear-gradient(135deg, #9EDEE5, #229DF4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    color: #333;
+}
+
+/* Conteneur principal */
+.login-container {
+    background-color: rgba(255, 255, 255, 0.95);
+    padding: 2.5rem;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    animation: fadeIn 1s ease-in-out;
+}
+
+/* Animation d'apparition */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Titre de la page */
+.login-container h1 {
+    font-size: 2.2rem;
+    color: #555;
+    margin-bottom: 1.5rem;
+    font-weight: 600;
+    letter-spacing: -0.5px;
+}
+
+/* Style des messages d'erreur */
+.error-message {
+    color: #ff4d4d;
+    background-color: #ffe6e6;
+    padding: 0.75rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    font-size: 0.9rem;
+}
+
+/* Style des champs de formulaire */
+.form-group {
+    margin-bottom: 1.5rem;
+    text-align: left;
+    position: relative;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 0.75rem 0.75rem 0.75rem 40px; /* Espace pour l'icône */
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    font-size: 1rem;
+    color: #555;
+    background-color: rgba(255, 255, 255, 0.9);
+    transition: all 0.3s ease;
+}
+
+.form-group input:focus {
+    border-color: #a8edea;
+    outline: none;
+    box-shadow: 0 0 10px rgba(168, 237, 234, 0.3);
+    background-color: #fff;
+}
+
+/* Icônes des champs de formulaire */
+.form-group i {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-40%);
+    color: #888;
+    font-size: 1.2rem;
+    transition: color 0.3s ease;
+}
+
+.form-group input:focus + i {
+    color: #a8edea;
+}
+
+/* Style du bouton de connexion */
+.login-button {
+    width: 100%;
+    padding: 0.75rem;
+    /* background: linear-gradient(135deg, #a8edea, #fed6e3); */
+    background: linear-gradient(135deg, #9EDEE5, #229DF4);
+    color: #555;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(168, 237, 234, 0.3);
+}
+
+.login-button:hover {
+    /* background: linear-gradient(135deg, #fed6e3, #a8edea); */
+    background: linear-gradient(135deg, #229DF4, #9EDEE5);
+    box-shadow: 0 6px 20px rgba(168, 237, 234, 0.4);
+    transform: translateY(-2px);
+}
+
+/* Lien pour s'inscrire ou récupérer un mot de passe */
+.login-links {
+    margin-top: 1.5rem;
+    font-size: 0.9rem;
+}
+
+.login-links a {
+    color: #229DF4;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.login-links a:hover {
+    color: #9EDEE5;
+}
+
+/* Responsive Design */
+@media (max-width: 480px) {
+    .login-container {
+        padding: 1.5rem;
+    }
+
+    .login-container h1 {
+        font-size: 1.8rem;
+    }
+
+    .form-group input {
+        padding: 0.6rem 0.6rem 0.6rem 35px;
+    }
+
+    .login-button {
+        padding: 0.6rem;
+    }
+}
