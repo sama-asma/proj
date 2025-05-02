@@ -61,41 +61,61 @@ if (!isset($_SESSION['user_id'])) {
             $result = [];
           }
           ?>
-            
         <!-- Section des contrats récents -->
-        <div class="recent-contracts">
-            <h2>Contrats Récents</h2>
-            <table>
-                <thead>
+    <div class="recent-contracts">
+        <h2>Contrats Récents</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Numero contrat</th>
+                    <th>Client</th>
+                    <th>Type</th>
+                    <th>Date de souscription</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($result as $contrat): ?>
                     <tr>
-                        <th>Numero contrat</th>
-                        <th>Client</th>
-                        <th>Type</th>
-                        <th>Date de souscription</th>
-                        <th>Actions</th>
+                        <td><?php echo htmlspecialchars($contrat['numero_contrat']); ?></td>
+                        <td><?php echo htmlspecialchars($contrat['nom_client'] . ' '. $contrat['prenom_client']); ?></td>
+                        <td><?php echo htmlspecialchars($contrat['type_assurance']); ?></td>
+                        <td><?php echo htmlspecialchars($contrat['date_souscription']); ?></td>
+                        <td>
+                            <!-- Lien dynamique en fonction du type d'assurance -->
+                            <?php
+                            // Normaliser la casse pour la comparaison
+                            $type_assurance = strtoupper($contrat['type_assurance']);
+                            $script = '';
+                            switch ($type_assurance) {
+                                case 'AUTOMOBILE':
+                                    $script = 'contrat_auto.php';
+                                    break;
+                                case 'INDIVIDUEL':
+                                    $script = 'contrat_scolarite.php';
+                                    break;
+                                case 'HABITATION':
+                                    $script = 'contrat_habitation.php';
+                                    break;
+                                case 'INDIVIDUEL':
+                                    $script = 'contrat_individuel.php';
+                                    break;
+                                default:
+                                    $script = 'contrat_auto.php';
+                            }
+                            ?>
+                            <a href="<?php echo $script; ?>?contrat=<?= $contrat['id_contrat'] ?>" 
+                            target="_blank"
+                            class="btn-view"
+                            title="Visualiser le contrat">
+                                <i class="fas fa-file-pdf"></i> PDF
+                            </a>
+                        </td>
                     </tr>
-                </thead>
-                <tbody>
-                    <?php foreach ($result as $contrat): ?>
-                        <tr>
-                            <td><?php echo htmlspecialchars($contrat['numero_contrat']); ?></td>
-                            <td><?php echo htmlspecialchars($contrat['nom_client'] . ' '. $contrat['prenom_client']); ?></td>
-                            <td><?php echo htmlspecialchars($contrat['type_assurance']); ?></td>
-                            <td><?php echo htmlspecialchars($contrat['date_souscription']); ?></td>
-                            <td>
-                                <!-- Bouton avec icône + ouverture en nouvel onglet -->
-                                <a href="contrat_auto.php?contrat=<?= $contrat['id_contrat'] ?>" 
-                                target="_blank"
-                                class="btn-view"
-                                title="Visualiser le contrat">
-                                    <i class="fas fa-file-pdf"></i> PDF
-                                </a>
-                            </td>
-                        </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
-        </div>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
     </div>
     <script src="js/script.js"></script>
 </body>

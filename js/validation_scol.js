@@ -72,7 +72,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     // Validation pour la date de naissance et l'âge de l'élève
-    const dateNaissanceInput = document.getElementById('date_naissance');
+    const dateNaissanceInput = document.getElementById('date_naissance_eleve');
     const ageEleveInput = document.getElementById('age_eleve');
 
     dateNaissanceInput.addEventListener('blur', function() {
@@ -92,30 +92,6 @@ document.addEventListener('DOMContentLoaded', function() {
             // Mettre à jour l'âge automatiquement
             ageEleveInput.value = age;
             ageEleveInput.dispatchEvent(new Event('input'));
-        }
-    });
-
-    ageEleveInput.addEventListener('input', function() {
-        const age = parseInt(this.value);
-        if (age < 3 || age > 25) {
-            showError(this, 'L\'âge doit être entre 3 et 25 ans');
-        } else if (dateNaissanceInput.value) {
-            const naissance = new Date(dateNaissanceInput.value);
-            const aujourdhui = new Date();
-            let ageCalcule = aujourdhui.getFullYear() - naissance.getFullYear();
-            
-            if (aujourdhui.getMonth() < naissance.getMonth() || 
-                (aujourdhui.getMonth() === naissance.getMonth() && aujourdhui.getDate() < naissance.getDate())) {
-                ageCalcule--;
-            }
-
-            if (age !== ageCalcule) {
-                showError(this, `L\'âge ne correspond pas à la date de naissance (${ageCalcule} ans)`);
-            } else {
-                clearError(this);
-            }
-        } else {
-            clearError(this);
         }
     });
 
@@ -178,7 +154,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
         try {
             const formData = new FormData(document.getElementById('formPrim'));
-            const response = await fetch('calcul_prime_scolarite.php', { // Adapter l'URL au endpoint scolaire
+            const response = await fetch('calcul_prime_scol.php', { // Adapter l'URL au endpoint scolaire
                 method: 'POST',
                 body: formData
             });

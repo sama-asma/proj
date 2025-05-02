@@ -36,7 +36,7 @@ if (!isset($_SESSION['user_id'])) {
                 <?php unset($_SESSION['form_errors']); ?>
             </div>
         <?php endif; ?>
-        <form id="formPrim" method="POST" action="traitement_auto.php" novalidate> <!-- novalidate: désactiver validation html -->
+        <form id="formPrim" method="POST" action="traitement_scolarite.php" novalidate> <!-- novalidate: désactiver validation html -->
             <h1>Souscription Assurance Scolarité</h1>
             
             <!-- Recherche client existant -->
@@ -103,12 +103,8 @@ if (!isset($_SESSION['user_id'])) {
     </div>
     <div class="form-row">
         <div class="form-group">
-            <label for="date_naissance" class="required">Date de naissance</label>
-            <input type="date" id="date_naissance" name="date_naissance" max="<?= date('Y-m-d'); ?>" required>
-        </div>
-        <div class="form-group">
-            <label for="age_eleve">Âge</label>
-            <input type="number" id="age_eleve" name="age_eleve" min="3" max="25" required>
+            <label for="date_naissance_eleve" class="required">Date de naissance</label>
+            <input type="date" id="date_naissance_eleve" name="date_naissance_eleve" max="<?= date('Y-m-d'); ?>" required>
         </div>
     </div>
 </div>
@@ -125,15 +121,6 @@ if (!isset($_SESSION['user_id'])) {
                 <option value="collège">Collège</option>
                 <option value="lycée">Lycée</option>
                 <option value="université">Université</option>
-            </select>
-        </div>
-        <div class="form-group">
-            <label for="climat" class="required">Climat</label>
-            <select id="climat" name="climat" required>
-                <option value="">-- Sélectionnez --</option>
-                <option value="froid">Froid</option>
-                <option value="tempéré">Tempéré</option>
-                <option value="chaud">Chaud</option>
             </select>
         </div>
     </div>
