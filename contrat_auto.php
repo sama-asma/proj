@@ -1,5 +1,6 @@
 <?php
 require_once('contrat_pdf.php');
+require_once('calcul_coef_auto.php'); // Inclure le fichier de fonctions de calcul
 
 class ContratAutoAssurance extends ContratPDF {
     //Titre spécifique pour les contrats auto
@@ -85,66 +86,23 @@ class ContratAutoAssurance extends ContratPDF {
         } catch (Exception $e) {
         die("Erreur lors de la récupération des données : " . $e->getMessage());
         }
-        // Calcul des coefficients
-        $current_year = date('Y');
-        $coef_age_vehicule = ($current_year - $contrat['annee_vehicule'] < 3) ? 0.9 : (($current_year - $contrat['annee_vehicule'] > 10) ? 1.2 : 1.0);
 
-        // Facteurs de calcul pour le modèle (vous devez avoir cette structure quelque part)
-        $facteurs_vehicule = [
-            'Renault' => [
-                'Clio' => 0.85,
-                'Megane' => 0.95,
-                'Kadjar' => 1.1
-            ],
-            'Peugeot' => [
-                '208' => 0.9,
-                '308' => 1.0,
-                '3008' => 1.15
-            ],
-            'Citroën' => [
-                'C3' => 0.88,
-                'C4' => 0.98,
-                'C5 Aircross' => 1.12
-            ],
-            'Volkswagen' => [
-                'Golf' => 0.92,
-                'Passat' => 1.05,
-                'Tiguan' => 1.18
-            ],
-            'BMW' => [
-                'Série 1' => 1.1,
-                'Série 3' => 1.25,
-                'X3' => 1.4
-            ]
+        // Préparer les données pour le calcul des coefficients
+        $data = [
+            'marque_vehicule' => $contrat['marque_vehicule'],
+            'type_vehicule' => $contrat['type_vehicule'],
+            'puissance' => $contrat['puissance_vehicule'],
+            'annee_vehicule' => $contrat['annee_vehicule'],
+            'stationnement' => $contrat['condition_stationnement'],
+            'date_naissance' => $contrat['date_naissance'],
+            'experience' => $contrat['experience_conducteur'],
+            'usage' => $contrat['type_usage'],
+            'environnement' => $contrat['environnement'],
+            'bonus_malus' => $contrat['bonus_malus']
         ];
 
-        $coef_modele = $facteurs_vehicule[$contrat['marque_vehicule']][$contrat['type_vehicule']] ?? 1.0;
-        $coef_puissance = ($contrat['puissance_vehicule'] < 80) ? 0.8 : (($contrat['puissance_vehicule'] > 150) ? 1.3 : 1.0);
-        $ceof_stationnement = ($contrat['condition_stationnement'] == 'garage') ? 0.8 : (($contrat['condition_stationnement'] == 'parking privé') ? 1.1 : 1.3);
-
-        // Calculer l'âge du conducteur
-        $date_naissance = new DateTime($contrat['date_naissance']);
-        $aujourdhui = new DateTime();
-        $age_conducteur = $aujourdhui->diff($date_naissance)->y;
-
-        $coef_age_conducteur = ($age_conducteur < 26) ? 1.4 : (($age_conducteur > 65) ? 1.3 : 1.0);
-        $coef_experience = ($contrat['experience_conducteur'] < 2) ? 1.5 : (($contrat['experience_conducteur'] > 10) ? 0.8 : 1.0);
-        $coef_usage = ($contrat['type_usage'] == 'professionnel') ? 1.4 : (($contrat['type_usage'] == 'mixte') ? 1.2 : 1.0);
-        $coef_environnement = ($contrat['environnement'] == 'urbain') ? 1.3 : (($contrat['environnement'] == 'rural') ? 0.9 : 1.0);
-        $bonus_malus = $contrat['bonus_malus'];
-
-        // Créer un tableau des coefficients à afficher
-        $coefficients = [
-            'Coefficient Modèle' => $coef_modele,
-            'Coefficient Puissance' => $coef_puissance,
-            'Coefficient Âge Véhicule' => $coef_age_vehicule,
-            'Coefficient Stationnement' => $ceof_stationnement,
-            'Coefficient Âge Conducteur' => $coef_age_conducteur,
-            'Coefficient Expérience' => $coef_experience,
-            'Coefficient Usage' => $coef_usage,
-            'Coefficient Environnement' => $coef_environnement,
-            'Bonus/Malus' => $bonus_malus
-        ];
+        // Calculer les coefficients en utilisant la fonction commune
+        $coefficients = calculerCoefficients($data);
 
         // Création du PDF
         $pdf = new ContratAutoAssurance();
@@ -178,6 +136,7 @@ class ContratAutoAssurance extends ContratPDF {
         $pdf->InfoLineDouble('Année :', $contrat['annee_vehicule'],
             'Puissance :', $contrat['puissance_vehicule'] . ' CV',  );
         $pdf->ln(5);
+        
         // Après les informations générales et avant les garanties
         $pdf->addPrimeDetails(
             $garanties['prime_base'],
@@ -186,6 +145,7 @@ class ContratAutoAssurance extends ContratPDF {
             $contrat['montant_prime'],
             $coefficients
         );
+        
         // Garanties (méthode spécifique)
         $pdf->addGarantiesAuto($garanties['nom_garantie'],$garanties['description'],$garanties['franchise']);
         
@@ -194,4 +154,4 @@ class ContratAutoAssurance extends ContratPDF {
         $pdf->SetTitle('Contrat d\'assurance véhicule');
         $pdf->Output('Contrat_' . $contrat['numero_contrat'] . '.pdf', 'I');
        
-       ?>
+?>
