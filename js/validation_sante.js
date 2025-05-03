@@ -117,7 +117,15 @@ document.addEventListener('DOMContentLoaded', function() {
             clearError(this);
         }
     });
-
+    // Désactiver les autres cases des antécédents si Aucun est coché
+    const checkbox = document.getElementById('aucun_antecedent');
+    checkbox.addEventListener('click' ,function() {
+        const checkboxes = document.querySelectorAll('.checkbox-group input[type="checkbox"]:not(#aucun_antecedent)');        
+        checkboxes.forEach(cb => {
+            cb.disabled = this.checked;
+            if (this.checked) cb.checked = false; // Décocher les autres cases
+        });
+    });
     // Set les dates automatiques pour le contrat
     const dateSubscription = document.getElementById('date_souscription');
     dateSubscription.value = new Date().toISOString().split('T')[0];
@@ -184,10 +192,9 @@ document.addEventListener('DOMContentLoaded', function() {
             if (!response.ok || !data.success) {
                 throw new Error(data.message || 'Erreur lors du calcul');
             }
-            afficherResultatPrime(data.prime, data.primeNet);
+            afficherResultatPrime(data.prime, data.primeNet, data.franchise);
             document.getElementById('souscrireBtn').style.display = 'inline-block';
             document.getElementById('formPrim').dataset.prime = data.prime;
-            document.getElementById('formPrim').dataset.franchise = data.franchise;
         } catch (error) {
             console.error("Erreur:", error);
             alert("Erreur lors du calcul: " + error.message);
@@ -197,7 +204,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    function afficherResultatPrime(prime, primeNet) {
+    function afficherResultatPrime(prime, primeNet, franchise) {
         const resultatDiv = document.getElementById('resultatCalcul');
         const detailDiv = document.getElementById('detailPrime');
     
@@ -213,6 +220,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <p>Prime avec Surcharge: <strong>${primeAvecSurcharge.toLocaleString('fr-FR')} DZD</strong></p>
                 <p>Prime avec Réduction: <strong>${primeAvecReduction.toLocaleString('fr-FR')} DZD</strong></p>
                 <p>Prime annuelle: <strong>${prime.toLocaleString('fr-FR')} DZD</strong></p>
+                <p>Franchise: <strong>${franchise.toLocaleDateString('fr-FR')} DZD</strong></p>
                 <p>Date d'effet: ${document.getElementById('date_souscription').value}</p>
                 <p>Date d'expiration: ${document.getElementById('date_expiration').value}</p>
             </div>
