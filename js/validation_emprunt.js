@@ -82,29 +82,29 @@ document.addEventListener('DOMContentLoaded', function() {
             age--;
         }
 
-        if (age < 18 || age > 75) {
-            showError(this, 'Le client doit avoir entre 18 et 75 ans');
+        if (age < 18 || age > 80) {
+            showError(this, 'Le client doit avoir entre 18 et 80 ans');
         } else {
             clearError(this);
         }
     });
 
     // Validation pour le montant du prêt
-    const montantPretInput = document.getElementById('montant_pret');
-    montantPretInput.addEventListener('blur', function() {
+    const montantEmpruntInput = document.getElementById('montant_emprunt');
+    montantEmpruntInput.addEventListener('blur', function() {
         const montant = parseFloat(this.value);
         if (!montant) {
             showError(this, 'Ce champ est obligatoire');
-        } else if (montant < 1000 || montant > 1000000) {
-            showError(this, 'Le montant doit être entre 1 000 et 1 000 000 €');
+        } else if (montant < 1000 || montant > 100000000) {
+            showError(this, 'Le montant doit être entre 1 000 et 100 000 000 DZD');
         } else {
             clearError(this);
         }
     });
 
     // Validation pour la durée du prêt
-    const dureePretInput = document.getElementById('duree_pret');
-    dureePretInput.addEventListener('blur', function() {
+    const dureeEmpruntInput = document.getElementById('duree_emprunt');
+    dureeEmpruntInput.addEventListener('blur', function() {
         const duree = parseInt(this.value);
         if (!duree) {
             showError(this, 'Ce champ est obligatoire');
@@ -134,8 +134,81 @@ document.addEventListener('DOMContentLoaded', function() {
         const revenu = parseFloat(this.value);
         if (!revenu && revenu !== 0) {
             showError(this, 'Ce champ est obligatoire');
-        } else if (revenu < 0 || revenu > 100000) {
-            showError(this, 'Le revenu doit être entre 0 et 100 000 €');
+        } else if (revenu < 50000 || revenu > 5000000) {
+            showError(this, 'Le revenu doit être entre 50 000 et 5 000 000 DZD');
+        } else {
+            clearError(this);
+        }
+    });
+
+    // Validation pour l'état de santé
+    const etatSanteInput = document.getElementById('etat_sante');
+    etatSanteInput.addEventListener('blur', function() {
+        const validValues = ['excellent', 'bon', 'moyen', 'mauvais'];
+        if (!this.value) {
+            showError(this, 'Ce champ est obligatoire');
+        } else if (!validValues.includes(this.value)) {
+            showError(this, 'État de santé invalide');
+        } else {
+            clearError(this);
+        }
+    });
+
+    // Validation pour fumeur
+    const fumeurInput = document.getElementById('fumeur');
+    fumeurInput.addEventListener('blur', function() {
+        const validValues = ['oui', 'non'];
+        if (!this.value) {
+            showError(this, 'Ce champ est obligatoire');
+        } else if (!validValues.includes(this.value)) {
+            showError(this, 'Statut fumeur invalide');
+        } else {
+            clearError(this);
+        }
+    });
+
+    // Validation pour la situation professionnelle
+    const situationProfessionnelleInput = document.getElementById('situation_professionnelle');
+    situationProfessionnelleInput.addEventListener('blur', function() {
+        const validValues = ['cdi', 'cdd', 'independant', 'fonctionnaire', 'sans_emploi'];
+        if (!this.value) {
+            showError(this, 'Ce champ est obligatoire');
+        } else if (!validValues.includes(this.value)) {
+            showError(this, 'Situation professionnelle invalide');
+        } else {
+            clearError(this);
+        }
+    });
+
+    // Validation pour la garantie
+    const idGarantieInput = document.getElementById('id_garantie');
+    idGarantieInput.addEventListener('blur', function() {
+        if (!this.value) {
+            showError(this, 'Ce champ est obligatoire');
+        } else {
+            clearError(this);
+        }
+    });
+
+    // Validation pour la surcharge
+    const surchargeInput = document.getElementById('surcharge');
+    surchargeInput.addEventListener('blur', function() {
+        const surcharge = parseFloat(this.value);
+        if (!surcharge && surcharge !== 0) {
+            showError(this, 'Ce champ est obligatoire');
+        } else if (surcharge < 0 || surcharge > 100) {
+            showError(this, 'La surcharge doit être entre 0 et 100 %');
+        } else {
+            clearError(this);
+        }
+    });
+
+    // Validation pour la réduction
+    const reductionInput = document.getElementById('reduction');
+    reductionInput.addEventListener('blur', function() {
+        const reduction = parseFloat(this.value);
+        if (this.value && (reduction < 0 || reduction > 100)) {
+            showError(this, 'La réduction doit être entre 0 et 100 %');
         } else {
             clearError(this);
         }
@@ -166,7 +239,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     dateExpiration.addEventListener('change', function() {
-        if (datePrenium.value) {
+        if (dateSubscription.value) {
             const subscriptionDate = new Date(dateSubscription.value);
             const expirationDate = new Date(this.value);
             
@@ -189,8 +262,19 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     
-        if (!isValide) {
-            alert('Veuillez corriger les erreurs avant de calculer');
+        // Déclencher les validations spécifiques
+        [telephoneInput, emailInput, dateNaissanceInput, montantEmpruntInput, dureeEmpruntInput, 
+         tauxInteretInput, revenuMensuelInput, etatSanteInput, fumeurInput, situationProfessionnelleInput, 
+         idGarantieInput, surchargeInput].forEach(input => {
+            input.dispatchEvent(new Event('blur'));
+        });
+    
+        if (!isValide || form.querySelector('.error-message')) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Erreur',
+                text: 'Veuillez corriger les erreurs avant de calculer',
+            });
             return;
         }
     
@@ -214,7 +298,11 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('formEmprunt').dataset.franchise = data.franchise;
         } catch (error) {
             console.error("Erreur:", error);
-            alert("Erreur lors du calcul: " + error.message);
+            Swal.fire({
+                icon: 'error',
+                title: 'Erreur',
+                text: 'Erreur lors du calcul: ' + error.message,
+            });
         } finally {
             btnCalculer.disabled = false;
             btnCalculer.textContent = 'Calculer la prime';
@@ -251,7 +339,12 @@ document.addEventListener('DOMContentLoaded', function() {
     // Gestion de la soumission finale
     document.getElementById('formEmprunt').addEventListener('submit', function(e) {
         if (!this.dataset.prime) {
-            alert("Veuillez d'abord calculer la prime");
+            Swal.fire({
+                icon: 'error',
+                title: 'Erreur',
+                text: 'Veuillez d\'abord calculer la prime',
+            });
+            e.preventDefault();
             return;
         }
         document.getElementById('prime').value = this.dataset.prime;
@@ -270,7 +363,11 @@ document.addEventListener('DOMContentLoaded', function() {
         const terme = inputRecherche.value.trim();
         
         if (terme.length < 2) {
-            Swal.fire("Veuillez entrer au moins 2 caractères");
+            Swal.fire({
+                icon: 'warning',
+                title: 'Attention',
+                text: 'Veuillez entrer au moins 2 caractères',
+            });
             return;
         }
         
@@ -342,7 +439,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 document.getElementById('date_naissance').value = btn.dataset.date_naissance;
                 resultatsDiv.style.display = 'none';
                 inputRecherche.value = '';
-                document.getElementById('montant_pret').focus();
+                document.getElementById('montant_emprunt').focus();
             }
         });
         

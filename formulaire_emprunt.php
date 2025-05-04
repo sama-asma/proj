@@ -91,12 +91,12 @@ if (!isset($_SESSION['user_id'])) {
                 <h2>Informations sur le Prêt</h2>
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="montant_pret" class="required">Montant du prêt (€)</label>
-                        <input type="number" id="montant_pret" name="montant_pret" min="1000" step="100" required>
+                        <label for="montant_emprunt" class="required">Montant du prêt (DZD)</label>
+                        <input type="number" id="montant_emprunt" name="montant_emprunt" min="1000" step="100" required>
                     </div>
                     <div class="form-group">
-                        <label for="duree_pret" class="required">Durée du prêt (années)</label>
-                        <input type="number" id="duree_pret" name="duree_pret" min="1" max="30" required>
+                        <label for="duree_emprunt" class="required">Durée du prêt (années)</label>
+                        <input type="number" id="duree_emprunt" name="duree_emprunt" min="1" max="30" required>
                     </div>
                 </div>
                 <div class="form-row">
@@ -124,9 +124,10 @@ if (!isset($_SESSION['user_id'])) {
                         <label for="etat_sante" class="required">État de santé général</label>
                         <select id="etat_sante" name="etat_sante" required>
                             <option value="">-- Sélectionnez --</option>
+                            <option value="excellent">Excellent</option>
                             <option value="bon">Bon</option>
-                            <option value="fragile">Fragile</option>
-                            <option value="maladie_chronique">Maladie chronique</option>
+                            <option value="moyen">Moyen</option>
+                            <option value="mauvais">Mauvais</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -145,8 +146,8 @@ if (!isset($_SESSION['user_id'])) {
                 <h2>Situation Professionnelle</h2>
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="situation_pro" class="required">Situation professionnelle</label>
-                        <select id="situation_pro" name="situation_pro" required>
+                        <label for="situation_professionnelle" class="required">Situation professionnelle</label>
+                        <select id="situation_professionnelle" name="situation_professionnelle" required>
                             <option value="">-- Sélectionnez --</option>
                             <option value="cdi">CDI</option>
                             <option value="cdd">CDD</option>
@@ -156,7 +157,7 @@ if (!isset($_SESSION['user_id'])) {
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="revenu_mensuel" class="required">Revenu mensuel (€)</label>
+                        <label for="revenu_mensuel" class="required">Revenu mensuel (DZD)</label>
                         <input type="number" id="revenu_mensuel" name="revenu_mensuel" min="0" step="100" required>
                     </div>
                 </div>

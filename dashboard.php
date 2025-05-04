@@ -19,103 +19,103 @@ if (!isset($_SESSION['user_id'])) {
 </head>
 <body>
     <!-- navigation -->
-     <?php include 'commun/nav.php'; ?>
+    <?php include 'commun/nav.php'; ?>
     <!-- Contenu principal -->
     <div class="main-content">
         <!-- En-tête -->
         <?php include 'commun/header.php'; ?>
 
-        <!-- Section des statistiques
-        <div class="stats-section">
-            <div class="stat-card">
-                <h2>150</h2>
-                <p>Contrats signés</p>
-            </div>
-            <div class="stat-card">
-                <h2>€25,000</h2>
-                <p>Chiffre d'affaires</p>
-            </div>
-            <div class="stat-card">
-                <h2>95%</h2>
-                <p>Taux de satisfaction</p>
-            </div>
-        </div> -->
         <?php 
-          require('db.php');
-          try{
-                $stmt = $conn->prepare("
-                        SELECT c.id_contrat, c.numero_contrat, c.type_assurance, c.date_souscription,
-                            cl.nom_client, cl.prenom_client
-                        FROM contrats c
-                        JOIN client cl ON c.id_client = cl.id_client
-                        ORDER BY c.date_souscription DESC 
-                        LIMIT 10
-                    ");
-                    if (!$stmt->execute()) {
-                        throw new Exception("Erreur lors de la récupération des contrats");
-                    }
-                $result = $stmt->get_result();
-          }
-          catch(Exception $e){
+        require('db.php');
+        try {
+            $stmt = $conn->prepare("
+                SELECT c.id_contrat, c.numero_contrat, c.type_assurance, c.date_souscription,
+                       cl.nom_client, cl.prenom_client
+                FROM contrats c
+                JOIN client cl ON c.id_client = cl.id_client
+                ORDER BY c.date_souscription DESC 
+                LIMIT 10
+            ");
+            if (!$stmt->execute()) {
+                throw new Exception("Erreur lors de la récupération des contrats");
+            }
+            $result = $stmt->get_result();
+        } catch (Exception $e) {
             echo "<div>Erreur: " . htmlspecialchars($e->getMessage()) . "</div>";
-            $result = [];
-          }
-          ?>
+            $result = null;
+        }
+        ?>
         <!-- Section des contrats récents -->
-    <div class="recent-contracts">
-        <h2>Contrats Récents</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Numero contrat</th>
-                    <th>Client</th>
-                    <th>Type</th>
-                    <th>Date de souscription</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($result as $contrat): ?>
+        <div class="recent-contracts">
+            <h2>Contrats Récents</h2>
+            <table>
+                <thead>
                     <tr>
-                        <td><?php echo htmlspecialchars($contrat['numero_contrat']); ?></td>
-                        <td><?php echo htmlspecialchars($contrat['nom_client'] . ' '. $contrat['prenom_client']); ?></td>
-                        <td><?php echo htmlspecialchars($contrat['type_assurance']); ?></td>
-                        <td><?php echo htmlspecialchars($contrat['date_souscription']); ?></td>
-                        <td>
-                            <!-- Lien dynamique en fonction du type d'assurance -->
-                            <?php
-                            // Normaliser la casse pour la comparaison
-                            $type_assurance = strtoupper($contrat['type_assurance']);
-                            $script = '';
-                            switch ($type_assurance) {
-                                case 'AUTOMOBILE':
-                                    $script = 'contrat_auto.php';
-                                    break;
-                                case 'INDIVIDUEL':
-                                    $script = 'contrat_scolarite.php';
-                                    break;
-                                case 'HABITATION':
-                                    $script = 'contrat_habitation.php';
-                                    break;
-                                case 'INDIVIDUEL':
-                                    $script = 'contrat_individuel.php';
-                                    break;
-                                default:
-                                    $script = 'contrat_auto.php';
-                            }
-                            ?>
-                            <a href="<?php echo $script; ?>?contrat=<?= $contrat['id_contrat'] ?>" 
-                            target="_blank"
-                            class="btn-view"
-                            title="Visualiser le contrat">
-                                <i class="fas fa-file-pdf"></i> PDF
-                            </a>
-                        </td>
+                        <th>Numéro contrat</th>
+                        <th>Client</th>
+                        <th>Type</th>
+                        <th>Date de souscription</th>
+                        <th>Actions</th>
                     </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
-    </div>
+                </thead>
+                <tbody>
+                    <?php if ($result && $result->num_rows > 0): ?>
+                        <?php while ($contrat = $result->fetch_assoc()): ?>
+                            <tr>
+                                <td><?php echo htmlspecialchars($contrat['numero_contrat']); ?></td>
+                                <td><?php echo htmlspecialchars($contrat['nom_client'] . ' ' . $contrat['prenom_client']); ?></td>
+                                <td><?php echo htmlspecialchars($contrat['type_assurance']); ?></td>
+                                <td><?php echo htmlspecialchars($contrat['date_souscription']); ?></td>
+                                <td>
+                                    <?php
+                                    $type_assurance = $contrat['type_assurance'];
+                                    switch ($type_assurance) {
+                                        case 'automobile':
+                                            $script = 'contrat_auto.php';
+                                            break;
+                                        case 'habitation':
+                                            $script = 'contrat_habitation.php';
+                                            break;
+                                        case 'santé':
+                                            $script = 'contrat_sante.php';
+                                            break;
+                                        case 'vie':
+                                            $script = 'contrat_vie.php';
+                                            break;
+                                        case 'scolarité':
+                                            $script = 'contrat_scolarite.php';
+                                            break;
+                                        case 'emprunteur':
+                                            $script = 'contrat_emprunteur.php';
+                                            break;
+                                        case 'cyberattaque':
+                                            $script = 'contrat_cyberattaque.php';
+                                            break;
+                                        case 'protection_juridique':
+                                            $script = 'contrat_protection_juridique.php';
+                                            break;
+                                        default:
+                                            $script = 'erreur.php';
+                                            break;
+                                    }
+                                    ?>
+                                    <a href="<?php echo $script; ?>?contrat=<?= $contrat['id_contrat'] ?>" 
+                                       target="_blank"
+                                       class="btn-view"
+                                       title="Visualiser le contrat">
+                                        <i class="fas fa-file-pdf"></i> PDF
+                                    </a>
+                                </td>
+                            </tr>
+                        <?php endwhile; ?>
+                    <?php else: ?>
+                        <tr>
+                            <td colspan="5">Aucun contrat trouvé.</td>
+                        </tr>
+                    <?php endif; ?>
+                </tbody>
+            </table>
+        </div>
     </div>
     <script src="js/script.js"></script>
 </body>
