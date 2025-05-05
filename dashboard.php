@@ -86,7 +86,7 @@ if (!isset($_SESSION['user_id'])) {
                                             $script = 'contrat_scolarite.php';
                                             break;
                                         case 'emprunteur':
-                                            $script = 'contrat_emprunteur.php';
+                                            $script = 'contrat_emprunt.php';
                                             break;
                                         case 'cyberattaque':
                                             $script = 'contrat_cyberattaque.php';
