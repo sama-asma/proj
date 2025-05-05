@@ -132,14 +132,14 @@ class ContratPDF extends tFPDF {
         
         // Réduction
         if ($reduction > 0) {
-            $montantReduction = $primeBase * $reduction / 100;
+            $montantReduction = $primeFinale * $reduction / 100;
             $this->Cell(100, 6, 'Réduction (' . $reduction . '%):', 0, 0);
             $this->Cell(0, 6, '- ' . number_format($montantReduction, 2, ',', ' ') . ' DZD', 0, 1);
         }
         
         // Surcharge
         if ($surcharge > 0) {
-            $montantSurcharge = $primeBase * $surcharge / 100;
+            $montantSurcharge = $primeFinale * $surcharge / 100;
             $this->Cell(100, 6, 'Surcharge (' . $surcharge . '%):', 0, 0);
             $this->Cell(0, 6, '+ ' . number_format($montantSurcharge, 2, ',', ' ') . ' DZD', 0, 1);
         }
