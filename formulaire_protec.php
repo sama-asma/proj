@@ -101,8 +101,18 @@ if (!isset($_SESSION['user_id'])) {
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="secteur_activite">Secteur d'activité</label>
-                        <input type="text" id="secteur_activite" name="secteur_activite" placeholder="Ex: Commerce, Santé, etc.">
+                        <label for="secteur_activite" class="required">Secteur d'activité</label>
+                        <select id="secteur_activite" name="secteur_activite" required>
+                            <option value="">-- Sélectionnez --</option>
+                            <option value="agriculture">Agriculture</option>
+                            <option value="industries_extractives">Industries extractives</option>
+                            <option value="industrie_manufacturiere">Industrie manufacturière</option>
+                            <option value="commerce">Commerce</option>
+                            <option value="information_communication">Information et communication</option>
+                            <option value="sante_humaine">Santé humaine</option>
+                            <option value="activites_extra_territoriales">Activités extra-territoriales</option>
+                            <option value="education">Éducation</option>
+                        </select>
                     </div>
                 </div>
             </div>
@@ -122,7 +132,7 @@ if (!isset($_SESSION['user_id'])) {
                     </div>
                     <div class="form-group">
                         <label for="frequence_litige">Fréquence estimée des litiges</label>
-                        <select id="frequence_litige" name="frequence_litige">
+                        <select id="frequence_litige" name="frequence_litige" required>
                             <option value="">-- Sélectionnez --</option>
                             <option value="rare">Rare (moins d'une fois par an)</option>
                             <option value="occasionnel">Occasionnel (1-2 fois par an)</option>

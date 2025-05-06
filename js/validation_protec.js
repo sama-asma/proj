@@ -32,6 +32,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 showError(this, 'Ce champ est obligatoire');
             } else {
                 clearError(this);
+                // Validation spécifique pour secteur_activite, type_litige et frequence_litige
+                if (this.id === 'secteur_activite' && this.value === '') {
+                    showError(this, 'Veuillez sélectionner un secteur d\'activité');
+                }
+                if (this.id === 'type_litige' && this.value === '') {
+                    showError(this, 'Veuillez sélectionner un type de litige');
+                }
+                if (this.id === 'frequence_litige' && this.value === '') {
+                    showError(this, 'Veuillez sélectionner une fréquence de litige');
+                }
             }
         });
         input.addEventListener('input', function() {
@@ -89,17 +99,37 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Validation pour le secteur d'activité (facultatif, mais vérification si rempli)
+    // Validation pour le secteur d'activité (vérifie qu'une option valide est sélectionnée)
     const secteurActiviteInput = document.getElementById('secteur_activite');
     secteurActiviteInput.addEventListener('blur', function() {
-        if (this.value.trim() && this.value.length < 2) {
-            showError(this, 'Le secteur d\'activité doit contenir au moins 2 caractères');
+        if (!this.value.trim()) {
+            showError(this, 'Veuillez sélectionner un secteur d\'activité');
         } else {
             clearError(this);
         }
     });
 
-    // Validation des dates de souscription et d'expiration
+    // Validation pour le type de litige (vérifie qu'une option valide est sélectionnée)
+    const typeLitigeInput = document.getElementById('type_litige');
+    typeLitigeInput.addEventListener('blur', function() {
+        if (!this.value.trim()) {
+            showError(this, 'Veuillez sélectionner un type de litige');
+        } else {
+            clearError(this);
+        }
+    });
+
+    // Validation pour la fréquence de litige (vérifie qu'une option valide est sélectionnée)
+    const frequenceLitigeInput = document.getElementById('frequence_litige');
+    frequenceLitigeInput.addEventListener('blur', function() {
+        if (!this.value.trim()) {
+            showError(this, 'Veuillez sélectionner une fréquence de litige');
+        } else {
+            clearError(this);
+        }
+    });
+
+    // Validation pour les dates de souscription et d'expiration
     const dateSubscription = document.getElementById('date_souscription');
     dateSubscription.value = new Date().toISOString().split('T')[0]; // Date par défaut à aujourd'hui
     const dateExpiration = document.getElementById('date_expiration');
@@ -145,6 +175,19 @@ document.addEventListener('DOMContentLoaded', function() {
                 isValide = false;
                 showError(input, 'Ce champ est obligatoire');
             }
+            // Validation spécifique pour secteur_activite, type_litige et frequence_litige
+            if (input.id === 'secteur_activite' && input.value === '') {
+                isValide = false;
+                showError(input, 'Veuillez sélectionner un secteur d\'activité');
+            }
+            if (input.id === 'type_litige' && input.value === '') {
+                isValide = false;
+                showError(input, 'Veuillez sélectionner un type de litige');
+            }
+            if (input.id === 'frequence_litige' && input.value === '') {
+                isValide = false;
+                showError(input, 'Veuillez sélectionner une fréquence de litige');
+            }
         });
     
         if (!isValide) {
@@ -158,7 +201,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
         try {
             const formData = new FormData(document.getElementById('formProtectionJuridique'));
-            const response = await fetch('calcul_prime_protection_juridique.php', {
+            const response = await fetch('calcul_prime_protec.php', {
                 method: 'POST',
                 body: formData
             });
