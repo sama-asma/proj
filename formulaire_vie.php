@@ -83,23 +83,27 @@ if (!isset($_SESSION['user_id'])) {
             </div>
 
             <div class="form-section">
-                <h2></h2>
+                <h2>Personnelle Informations</h2>
                 <div class="form-row">
-                    <div class="form-group">
+                        <div class="form-group">
                         <label for="profession" class="required">Profession</label>
                         <select id="profession" name="profession" required>
                             <option value="">-- Sélectionnez --</option>
-                            <option value="bureau">Travail de bureau</option>
-                            <option value="manuel">Travail manuel léger</option>
-                            <option value="danger">Profession à risque</option>
-                            <option value="autre">Autre</option>
+                            <option value="employe_bureau">Employé de bureau</option>
+                            <option value="enseignant">Enseignant</option>
+                            <option value="medecin">Médecin</option>
+                            <option value="infirmier">Infirmier</option>
+                            <!-- Professions à risque  -->
+                            <option value="pompier">Pompier</option>
+                            <option value="militaire">Militaire</option>
+                            <option value="chauffeur">Chauffeur routier</option>
+                            <option value="policier">Policier</option>
                         </select>
                     </div>
                     <div class="form-group">
                         <label for="etat_sante" class="required">État de santé</label>
                         <select id="etat_sante" name="etat_sante" required>
                             <option value="">-- Sélectionnez --</option>
-                            <option value="excellent">Excellent</option>
                             <option value="bon">Bon</option>
                             <option value="moyen">Moyen</option>
                             <option value="mauvais">Mauvais</option>
@@ -108,19 +112,19 @@ if (!isset($_SESSION['user_id'])) {
                 </div>
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="fumeur">Statut tabagique</label>
+                       <label for="fumeur">Fumeur</label>
                         <select id="fumeur" name="fumeur">
-                            <option value="non">Non-fumeur</option>
-                            <option value="occasionnel">Fumeur occasionnel</option>
-                            <option value="regulier">Fumeur régulier</option>
+                            <option value="non">Non</option>
+                            <option value="occasionnel">Occasionnel</option>
+                            <option value="regulier">Régulier</option>
                         </select>
                     </div>
                     <div class="form-group">
                         <label for="sexe" class="required">Sexe</label>
                         <select id="sexe" name="sexe" required>
                             <option value="">-- Sélectionnez --</option>
-                            <option value="homme">Homme</option>
-                            <option value="femme">Femme</option>
+                            <option value="Homme">Homme</option>
+                            <option value="Femme">Femme</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -128,14 +132,56 @@ if (!isset($_SESSION['user_id'])) {
                         <input type="number" id="capital" name="capital" min="100000" step="10000" required>
                     </div>
                 </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="antecedents">Antécédents médicaux familiaux</label>
-                        <textarea id="antecedents" name="antecedents" rows="3"></textarea>
+                <div class="form-group">
+                <label>Antécédents médicaux</label>
+                <div class="checkbox-group">
+                    <!-- Option "Aucun" (exclusive) -->
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="aucun_antecedent" name="antecedents[]" value="aucun" >
+                        <label for="aucun_antecedent">Aucun antécédent</label>
+                    </div>
+                    
+                    <!-- Options principales -->
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="diabete" name="antecedents[]" value="diabete">
+                        <label for="diabete">Diabète</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="hypertension" name="antecedents[]" value="hypertension">
+                        <label for="hypertension">Hypertension</label>
+                    </div>
+                    <!-- Options supplémentaires -->
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="cancer" name="antecedents[]" value="cancer">
+                        <label for="cancer">Cancer (rémis ou en traitement)</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="asthme" name="antecedents[]" value="asthme">
+                        <label for="asthme">Asthme</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="maladie_cardiaque" name="antecedents[]" value="maladie_cardiaque">
+                        <label for="maladie_cardiaque">Maladie cardiaque</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="avc" name="antecedents[]" value="avc">
+                        <label for="avc">AVC ou antécédent cérébral</label>
                     </div>
                 </div>
             </div>
-
+            <!-- Réductions et surcharges-->
+            <div class="form-section">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="reduction">Réduction: (En %)</label>
+                        <input type="number" name="reduction" id="reduction">
+                    </div>
+                    <div class="form-group">
+                        <label for="surcharge" class="required" >Surcharge: (En %)</label>
+                        <input type="number" name="surcharge" id="surcharge" required>
+                    </div>
+                </div>
+            </div>
             <!-- Garanties -->
             <div class="form-section">
                 <h2>Garanties</h2>
@@ -173,13 +219,13 @@ if (!isset($_SESSION['user_id'])) {
                         <input type="date" id="date_souscription" name="date_souscription" required>
                     </div>
                     <div class="form-group">
-                        <label for="duree" class="required">Durée (années)</label>
-                        <input type="number" id="duree" name="duree" min="5" max="30" required>
+                            <label for="date_expiration" class="required">Date d'expiration</label>
+                            <input type="date" id="date_expiration" name="date_expiration" required>
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="beneficiaires" class="required">Bénéficiaires</label>
+                        <label for="beneficiaires" >Bénéficiaires</label>
                         
                         <!-- Conteneur pour la liste des bénéficiaires -->
                         <div id="liste_beneficiaires" class="beneficiaires-container"></div>
@@ -193,13 +239,14 @@ if (!isset($_SESSION['user_id'])) {
                         </div>
                         
                         <!-- Champ caché pour stocker les données JSON -->
-                        <input type="hidden" id="beneficiaires" name="beneficiaires" required>
+                        <input type="hidden" id="beneficiaires" name="beneficiaires" >
                     </div>
                 </div>
             </div>
 
             <div>
                 <input type="hidden" name="prime_calculee" id="prime">
+                <input type="hidden" name="capital_garantie" id="capital_garantie">
             </div>
 
             <div class="buttons-container">

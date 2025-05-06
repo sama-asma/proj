@@ -97,12 +97,12 @@ class ContratAutoAssurance extends ContratPDF {
             'date_naissance' => $contrat['date_naissance'],
             'experience' => $contrat['experience_conducteur'],
             'usage' => $contrat['type_usage'],
-            'environnement' => $contrat['environnement'],
-            'bonus_malus' => $contrat['bonus_malus']
+            'environnement' => $contrat['environnement']
         ];
 
         // Calculer les coefficients en utilisant la fonction commune
         $coefficients = calculerCoefficients($data);
+        $coefficients['bonus_malus'] = $contrat['bonus_malus'];
 
         // Création du PDF
         $pdf = new ContratAutoAssurance();
@@ -116,7 +116,7 @@ class ContratAutoAssurance extends ContratPDF {
         $pdf->InfoLine('Date de souscription :', date("d/m/Y", strtotime($contrat['date_souscription'])));
         $pdf->InfoLine('Date d\'expiration :', date("d/m/Y", strtotime($contrat['date_expiration'])));
         $pdf->InfoLine('Prime annuelle :', number_format($contrat['montant_prime'], 2, ',', ' ') . ' DZD');
-        $pdf->Ln(5);
+        $pdf->Ln(3);
         
         // Informations du souscripteur
         $pdf->SectionTitle('INFORMATIONS DU SOUSCRIPTEUR');
@@ -124,7 +124,7 @@ class ContratAutoAssurance extends ContratPDF {
         $pdf->InfoLine('Téléphone :', $contrat['telephone']);
         $pdf->InfoLine('Email :', $contrat['email']);
         $pdf->InfoLine('Date de Naissance :', date('d/m/Y', strtotime($contrat['date_naissance'])));
-        $pdf->Ln(5);
+        $pdf->Ln(3);
         
         // Véhicule (méthode spécifique)
         $pdf->SectionTitle('VÉHICULE ASSURÉ');
@@ -136,6 +136,13 @@ class ContratAutoAssurance extends ContratPDF {
         $pdf->InfoLineDouble('Année :', $contrat['annee_vehicule'],
             'Puissance :', $contrat['puissance_vehicule'] . ' CV',  );
         $pdf->ln(5);
+        // Informations du conducteur et du véhicule
+        $pdf->SectionTitle('INFORMATIONS COMPLÉMENTAIRES');
+        $pdf->InfoLineDouble('Usage du véhicule :', $contrat['type_usage'], 
+            'Environnement :', $contrat['environnement'], 50);
+        $pdf->InfoLineDouble('Expérience du conducteur:', $contrat['experience_conducteur'] . ' ans', 
+            'Stationnement :', $contrat['condition_stationnement'], 50);
+        $pdf->Ln(5);
         
         // Après les informations générales et avant les garanties
         $pdf->addPrimeDetails(

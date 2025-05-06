@@ -96,14 +96,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
     $stmt->close();
-    // Vérifier si la prime est cohérente
-    $primeMin = $primeBase * 0.5;
-    $primeMax = $primeBase * 3.5;
-    if ($prime < $primeMin || $prime > $primeMax) {
-        $_SESSION['error'] = "Incohérence détectée dans le calcul de la prime";
-        header('Location: formulaire_vehicule.php');
-        exit();
-    }
+    
     try{
         // Vérifier si le client existe déjà avec plusieurs critères
         $stmt = $conn->prepare("SELECT id_client FROM client
@@ -132,8 +125,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $client_id = $stmt->insert_id; // Récupérer l'ID du client inséré
         $stmt->close();
         }
+        
+       // Générer un numéro de contrat unique
+        do {
+            $numero_contrat = uniqid("CTR-AUT-");
+            $result = $conn->query("SELECT id_contrat FROM contrats WHERE numero_contrat = '$numero_contrat'");
+        } while ($result->num_rows > 0);
         // Préparer la requête d'insertion
-        $numero_contrat = uniqid("CTR-"); // Générer un numéro de contrat unique
         $stmt = $conn->prepare("INSERT INTO contrats (
             numero_contrat, id_client, date_souscription, date_expiration, 
             type_assurance, montant_prime, reduction, surcharge
@@ -152,7 +150,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             marque_vehicule, type_vehicule, annee_vehicule, bonus_malus, numero_serie, immatriculation
         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
         
-        $stmt->bind_param("iiisssssssiss", 
+        $stmt->bind_param("iiisssssssdss", 
             $contrat_id, $id_garantie, $experience_conducteur,
             $environnement, $usage, $condition_stationnement, $puissance_vehicule,
             $marque_vehicule, $type_vehicule, $annee_vehicule, $bonus_malus, $numero_serie, $immatriculation);
@@ -174,7 +172,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
             <script>
                // 1. Afficher l'alerte
-               Swal.fire("Contrat généré avec succès !").then(() => {
+               Swal.fire({
+                    title: "Contrat généré avec succès !",
+                    text: "Le contrat d'assurance véhicule a été créé",
+                    icon: "success"
+                 }).then(() => {
                     // 2. Ouvrir le PDF après la fermeture de l'alerte
                     window.open("contrat_auto.php?contrat=$contrat_id", "_blank");
                     

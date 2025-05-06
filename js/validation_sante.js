@@ -220,7 +220,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <p>Prime avec Surcharge: <strong>${primeAvecSurcharge.toLocaleString('fr-FR')} DZD</strong></p>
                 <p>Prime avec Réduction: <strong>${primeAvecReduction.toLocaleString('fr-FR')} DZD</strong></p>
                 <p>Prime annuelle: <strong>${prime.toLocaleString('fr-FR')} DZD</strong></p>
-                <p>Franchise: <strong>${franchise.toLocaleDateString('fr-FR')} DZD</strong></p>
+                <p>Franchise: <strong>${franchise.toLocaleString('fr-FR')} %</strong></p>
                 <p>Date d'effet: ${document.getElementById('date_souscription').value}</p>
                 <p>Date d'expiration: ${document.getElementById('date_expiration').value}</p>
             </div>
@@ -253,7 +253,7 @@ document.addEventListener('DOMContentLoaded', function() {
         submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Souscription en cours...';
     });
     
-    // Fonction de recherche client (identique à la version véhicule)
+    // Fonction de recherche client 
     const btnRecherche = document.getElementById('btnRechercheClient');
     btnRecherche.addEventListener('click', function() {
         const inputRecherche = document.getElementById('recherche_client');

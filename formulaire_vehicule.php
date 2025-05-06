@@ -93,11 +93,11 @@ if (!isset($_SESSION['user_id'])) {
                             <label for="marque_vehicule" class="required">Marque du véhicule</label>
                             <select id="marque_vehicule" name="marque_vehicule" required>
                                 <option value="">-- Sélectionnez --</option>
-                                <option value="renault">Renault</option>
-                                <option value="peugeot">Peugeot</option>
-                                <option value="citroen">Citroën</option>
-                                <option value="volkswagen">Volkswagen</option>
-                                <option value="bmw">BMW</option>
+                                <option value="Renault">Renault</option>
+                                <option value="Peugeot">Peugeot</option>
+                                <option value="Citroen">Citroën</option>
+                                <option value="Volkswagen">Volkswagen</option>
+                                <option value="BMW">BMW</option>
                             </select>
                         </div>
                         <div class="form-group">
@@ -148,7 +148,7 @@ if (!isset($_SESSION['user_id'])) {
                     </div>
                     <div class="form-group">
                         <label for="bonus_malus" class="required">Coefficient Bonus-Malus</label>
-                        <input type="number" id="bonus_malus" name="bonus_malus" step="0.01" min="0.5" value="1.00" max="3.5" required>
+                        <input type="number" id="bonus_malus" name="bonus_malus" step="0.1"  value="1.00"  required>
                     </div>
                 </div>
                 <div class="form-row">
@@ -158,7 +158,6 @@ if (!isset($_SESSION['user_id'])) {
                             <option value="">-- Sélectionnez --</option>
                             <option value="personnel">Personnel</option>
                             <option value="professionnel">Professionnel</option>
-                            <option value="mixte">Mixte</option>
                         </select>
                     </div>
                     <div class="form-group">

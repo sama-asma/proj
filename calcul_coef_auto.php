@@ -57,7 +57,7 @@ function calculerCoefficients($data) {
     
     // Coefficient puissance
     $puissance = $data['puissance'];
-    $coefficients['coef_puissance'] = ($puissance < 80) ? 0.8 : (($puissance > 150) ? 1.3 : 1.0);
+    $coefficients['coef_puissance'] = ($puissance < 7) ? 0.8 : (($puissance > 10) ? 1.3 : 1.0);
     
     // Coefficient âge véhicule
     $annee_vehicule =  $data['annee_vehicule'] ?? date('Y');
@@ -65,9 +65,8 @@ function calculerCoefficients($data) {
                                         (($current_year - $annee_vehicule > 10) ? 1.2 : 1.0);
     
     // Coefficient stationnement
-    $stationnement = isset($data['stationnement']);
-    $coefficients['coef_stationnement'] = ($stationnement == 'garage') ? 0.8 : 
-                                       (($stationnement == 'parking privé') ? 1.1 : 1.3);
+    $coefficients['coef_stationnement'] = ($data['stationnement'] == 'garage') ? 0.8 : 
+                                       (($data['stationnement'] == 'parking privé') ? 1.1 : 1.3);
     
     // Coefficient âge conducteur
     $coefficients['coef_age_conducteur'] = ($data['age_conducteur'] < 26) ? 1.4 : 
@@ -80,8 +79,7 @@ function calculerCoefficients($data) {
     
     // Coefficient usage
     $usage =  $data['usage'];
-    $coefficients['coef_usage'] = ($usage == 'professionnel') ? 1.4 : 
-                                 (($usage == 'mixte') ? 1.2 : 1.0);
+    $coefficients['coef_usage'] = ($usage == 'professionnel') ? 1.3 : 1.0;
     
     // Coefficient environnement
     $environnement = $data['environnement'];

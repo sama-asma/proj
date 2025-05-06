@@ -87,21 +87,51 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             clearError(this);
         }
+    }); 
+      // Désactiver les autres cases des antécédents si Aucun est coché
+    const checkbox = document.getElementById('aucun_antecedent');
+    checkbox.addEventListener('click' ,function() {
+        const checkboxes = document.querySelectorAll('.checkbox-group input[type="checkbox"]:not(#aucun_antecedent)');        
+        checkboxes.forEach(cb => {
+            cb.disabled = this.checked;
+            if (this.checked) cb.checked = false; // Décocher les autres cases
+        });
     });
-
-    // Validation pour la durée du contrat (5 à 30 ans)
-    const dureeInput = document.getElementById('duree');
-    dureeInput.addEventListener('blur', function() {
-        if (this.value < 5 || this.value > 30) {
-            showError(this, 'La durée doit être entre 5 et 30 ans');
-        } else {
-            clearError(this);
-        }
-    });
-
     // Set la date de souscription par défaut à aujourd'hui
     const dateSubscription = document.getElementById('date_souscription');
     dateSubscription.value = new Date().toISOString().split('T')[0];
+    const dateExpiration = document.getElementById('date_expiration');
+    dateExpiration.value = new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString().split('T')[0];
+    
+    dateSubscription.addEventListener('change', function() {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const selectedDate = new Date(this.value);
+        
+        if (selectedDate < today) {
+            showError(this, 'La date de souscription ne peut pas être dans le passé');
+        } else {
+            clearError(this);
+            if (this.value) {
+                const expirationDate = new Date(selectedDate);
+                expirationDate.setFullYear(expirationDate.getFullYear() + 1);
+                const formattedDate = expirationDate.toISOString().split('T')[0];
+                dateExpiration.value = formattedDate;
+            }
+        }
+    });
+    dateExpiration.addEventListener('change', function() {
+        if (dateSubscription.value) {
+            const subscriptionDate = new Date(dateSubscription.value);
+            const expirationDate = new Date(this.value);
+            
+            if (expirationDate <= subscriptionDate) {
+                showError(this, 'La date d\'expiration doit être postérieure à la date de souscription');
+            } else {
+                clearError(this);
+            }
+        }
+    });
 
     // Calcul de la prime
     document.getElementById('calculerPrimeBtn').addEventListener('click', async function() {
@@ -134,9 +164,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 throw new Error(data.message || 'Erreur lors du calcul');
             }
             
-            afficherResultatPrime(data.prime);
+            afficherResultatPrime(data.prime,data.primeNet, data.capital_garanti, data.franchise);
             document.getElementById('souscrireBtn').style.display = 'inline-block';
             form.dataset.prime = data.prime;
+            form.dataset.capital_garanti = data.capital_garanti;
             
         } catch (error) {
             console.error("Erreur:", error);
@@ -147,16 +178,29 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    function afficherResultatPrime(prime) {
+    function afficherResultatPrime(prime, primeNet, capital, franchise) {
+        const resultatDiv = document.getElementById('resultatCalcul');
         const detailDiv = document.getElementById('detailPrime');
+    
+        const surcharge = parseFloat(document.getElementById('surcharge').value) / 100 || 0;
+        const reduction = parseFloat(document.getElementById('reduction').value) / 100  || 0;
+    
+        const primeAvecSurcharge = primeNet * (1 + surcharge);
+        const primeAvecReduction = primeAvecSurcharge * (1 - reduction);
+    
         detailDiv.innerHTML = `
             <div class="prime-result">
+                <p>Prime Net: ${primeNet.toLocaleString('fr-FR')} DZD</p>
+                <p>Prime avec Surcharge: <strong>${primeAvecSurcharge.toLocaleString('fr-FR')} DZD</strong></p>
+                <p>Prime avec Réduction: <strong>${primeAvecReduction.toLocaleString('fr-FR')} DZD</strong></p>
                 <p>Prime annuelle: <strong>${prime.toLocaleString('fr-FR')} DZD</strong></p>
-                <p>Capital assuré: ${document.getElementById('capital').value.toLocaleString('fr-FR')} DZD</p>
-                <p>Durée: ${document.getElementById('duree').value} ans</p>
+                <p>Franchise: <strong>${franchise.toLocaleString('fr-FR')} %</strong></p>
+                <p>Capitale garanti: ${capital.toLocaleString('fr-FR')} DZD</p>
                 <p>Date d'effet: ${document.getElementById('date_souscription').value}</p>
+                <p>Date d'expiration: ${document.getElementById('date_expiration').value}</p>
             </div>
         `;
+        resultatDiv.style.display = 'block';
     }
 
     // Gestion de la soumission finale
@@ -168,6 +212,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         document.getElementById('prime').value = this.dataset.prime;
+        document.getElementById('capital_garantie').value = this.dataset.capital_garanti;
         const submitBtn = document.getElementById('souscrireBtn');
         submitBtn.disabled = true;
         submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Souscription en cours...';
@@ -214,6 +259,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             Email: ${client.email}
                         </div>
                         <button class="select-btn" 
+                                type="button"
                                 data-nom="${client.nom}"
                                 data-prenom="${client.prenom}"
                                 data-telephone="${client.telephone}"
@@ -277,7 +323,6 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
         `;
         document.getElementById('liste_beneficiaires').insertAdjacentHTML('beforeend', beneficiaireHTML);
-        verifierTotalParts();
         // Mise à jour du champ caché (format JSON)
         majChampCacheBeneficiaires();
 
@@ -292,7 +337,6 @@ document.addEventListener('DOMContentLoaded', function() {
         if (e.target.classList.contains('supprimer-beneficiaire')) {
             e.target.parentElement.remove();
             majChampCacheBeneficiaires();
-            verifierTotalParts();
         }
     });
 
@@ -318,7 +362,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 return sum + part;
             }, 0);
         
-        if (total !== 100) {
+        if (total >0 && total !== 100) {
             Swal.fire('Attention', `Le total des parts doit être 100% (actuellement ${total}%)`, 'warning');
         }
     }

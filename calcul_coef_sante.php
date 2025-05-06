@@ -56,6 +56,11 @@ function calculerCoefficientsSante($data) {
         'occasionnel' => 1.1,
         'regulier' => 1.4
     };
+    // Sexe
+    $coefficients['coef_sexe'] = match($data['sexe']) {
+        'homme' => 1.1,
+        'femme' => 1.0
+    };
 
     // Profession à risque
     $professions_risque = ['pompier', 'militaire', 'chauffeur', 'policier'];

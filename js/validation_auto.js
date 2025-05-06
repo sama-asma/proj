@@ -122,17 +122,20 @@
             clearError(this);
         }
     });
-    // Validation numéro de série 
     document.getElementById('numero_serie').addEventListener('blur', function() {
-            if (this.value.length < 3) {
-                showError(this, 'Trop court (min 3 caractères)');
-            } else {
-                clearError(this);
-            }
-        });
-    // });
+        let valeur = this.value.trim();
+        let regex = /^[A-HJ-NPR-Z0-9]{17}$/; // Vérification du format standard (17 caractères sans I, O, Q)
+    
+        if (valeur.length !== 17) {
+            showError(this, 'Le numéro de série doit contenir exactement 17 caractères.');
+        } else if (!regex.test(valeur)) {
+            showError(this, 'Numéro invalide ! Seuls les lettres A-Z (hors I, O, Q) et chiffres sont autorisés.');
+        } else {
+            clearError(this);
+        }
+    });
   
-    // Validation pour l'immatriculation algérienne
+    // Validation pour l'immatriculation 
     const immatInput = document.getElementById('immatriculation');
     immatInput.addEventListener('blur', function() {
         const value = this.value.trim();
@@ -180,25 +183,51 @@
         }
     });
 
-    // Permettre aussi la saisie sans tirets mais ajouter automatiquement les tirets
     immatInput.addEventListener('input', function() {
-        let value = this.value.replace(/\D/g, ''); // Supprimer tout ce qui n'est pas un chiffre
+        let value = this.value;
         
-        if (value.length > 6) {
-            // Après 6 chiffres, ajouter le premier tiret
-            value = value.substring(0, 6) + '-' + value.substring(6);
-        }
-        if (value.length > 10) {
-            // Après 3 chiffres suivants, ajouter le deuxième tiret
-            value = value.substring(0, 10) + '-' + value.substring(10);
-        }
-        if (value.length > 13) {
-            // Limiter à 13 caractères au total (6-3-2)
-            value = value.substring(0, 13);
+        // Garder seulement chiffres et tirets autorisés
+        value = value.replace(/[^\d-]/g, '');
+        
+        // Trouver la position du premier tiret
+        const firstDashIndex = value.indexOf('-');
+        
+        // Si l'utilisateur a entré un tiret
+        if (firstDashIndex !== -1) {
+            // Déterminer la longueur du premier groupe (5 ou 6 chiffres)
+            const firstGroupLength = firstDashIndex;
+            
+            // Formatage automatique des groupes suivants
+            if (firstGroupLength === 5 || firstGroupLength === 6) {
+                // Supprimer tous les tirets après le premier
+                let parts = value.split('-');
+                let cleanedValue = parts[0] + '-' + parts.slice(1).join('').replace(/\D/g, '');
+                
+                // Réassembler avec les tirets aux bonnes positions
+                if (firstGroupLength === 6) {
+                    // Format 6-3-2
+                    if (cleanedValue.length > 10) {
+                        cleanedValue = cleanedValue.substring(0, 10) + '-' + cleanedValue.substring(10);
+                    }
+                    if (cleanedValue.length > 13) {
+                        cleanedValue = cleanedValue.substring(0, 13);
+                    }
+                } else {
+                    // Format 5-3-2
+                    if (cleanedValue.length > 9) {
+                        cleanedValue = cleanedValue.substring(0, 9) + '-' + cleanedValue.substring(9);
+                    }
+                    if (cleanedValue.length > 12) {
+                        cleanedValue = cleanedValue.substring(0, 12);
+                    }
+                }
+                
+                value = cleanedValue;
+            }
         }
         
         this.value = value;
-        });
+    });
     
     //Set les dates automatique et des Validation
     const dateSubscription = document.getElementById('date_souscription');
@@ -466,11 +495,11 @@
         const typeSelect = document.getElementById('type_vehicule');
         
         const typesParMarque = {
-            'renault': ['Clio', 'Megane', 'Kadjar'],
-            'peugeot': ['208', '308', '3008'],
-            'citroen': ['C3', 'C4', 'C5 Aircross'],
-            'volkswagen': ['Golf', 'Passat', 'Tiguan'],
-            'bmw': ['Série 1', 'Série 3', 'X3']
+            'Renault': ['Clio', 'Megane', 'Kadjar'],
+            'Peugeot': ['208', '308', '3008'],
+            'Citroen': ['C3', 'C4', 'C5 Aircross'],
+            'Volkswagen': ['Golf', 'Passat', 'Tiguan'],
+            'BMW': ['Série 1', 'Série 3', 'X3']
         };
         
         marqueSelect.addEventListener('change', function() {
