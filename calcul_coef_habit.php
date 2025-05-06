@@ -6,27 +6,20 @@
 // Facteurs de calcul pour les types de logement
 function getFacteursHabitation() {
     return [
-        'type_logement' => [
-            'maison' => 1.1,
-            'appartement' => 0.9,
-            'villa' => 1.3,
-            'studio' => 0.8
-        ],
         'materiaux' => [
             'resistant' => 0.8,  // Béton armé, pierre
             'standard' => 1.0,   // Parpaing, brique
             'fragile' => 1.3     // Bois, terre
         ],
         'etat_toiture' => [
-            'excellent' => 0.85, // < 5 ans
+            'neuf' => 0.85, // < 5 ans
             'bon' => 1.0,        // 5-10 ans
             'moyen' => 1.15,     // 10-20 ans
             'mauvais' => 1.4     // > 20 ans
         ],
         'statut_occupation' => [
             'proprietaire' => 1.1,
-            'locataire' => 0.9,
-            'colocataire' => 1.2
+            'locataire' => 0.9
         ],
         'localisation' => [
             'urbain' => 1.2,
@@ -35,9 +28,8 @@ function getFacteursHabitation() {
         ],
         'securite' => [
             'alarme' => 0.9,
-            'detecteur_fumee' => 0.95,
-            'surveillance' => 0.85,
-            'extincteur' => 0.92
+            'detecteur fumee' => 0.95,
+            'surveillance' => 0.85
         ],
         'nb_occupants' => [
             '1-2' => 1.0,
@@ -71,7 +63,7 @@ function calculerCoefficientsHabitation($data) {
     }
     
     // Coefficient type de logement
-    $coefficients['coef_type'] = $facteurs['type_logement'][$data['type_logement']] ?? 1.0;
+    $coefficients['coef_type'] = ($data['type_logement'] ==='maison') ? 1.1 : 0.9;
     
     // Coefficient matériaux
     $coefficients['coef_materiaux'] = $facteurs['materiaux'][$data['materiaux']] ?? 1.0;
@@ -84,6 +76,9 @@ function calculerCoefficientsHabitation($data) {
     
     // Coefficient localisation
     $coefficients['coef_localisation'] = $facteurs['localisation'][$data['localisation']] ?? 1.0;
+    // Coefficient occupation
+    $coefficients['coef_occupation'] = ($data['occupation'] === 'secondaire') ? 1.3 : 1.0;
+
     
     // Coefficient sécurité (multiplicatif)
     $coefficients['coef_securite'] = 1.0;
@@ -117,23 +112,21 @@ function calculerCoefficientsHabitation($data) {
     
     // Coefficient superficie (non linéaire)
     $superficie = $data['superficie'] ?? 0;
-    $coefficients['coef_superficie'] = min(1.0 + ($superficie / 200), 2.5);
-    
+    $coefficients['coef_superficie'] = min(1.0 + ($superficie / 250), 2.3);    
+   
     // Coefficient capital mobilier
     $capital = $data['capital_mobilier'] ?? 0;
-    $coefficients['coef_capital'] = min(1.0 + ($capital / 5000000), 3.0);
-    
+    $coefficients['coef_capital'] = round(min(1.0 + ($capital / 7000000), 2.8), 2);
+
     // Coefficient sinistres antérieurs
     $antecedents = $data['antecedents'] ?? 0;
     $coefficients['coef_sinistres'] = 1.0 + ($antecedents * 0.1);
-    
     return $coefficients;
 }
 
 // Calcul de la prime habitation
 function calculerPrimeHabitation($primeBase, $coefficients, $reduction = 0, $surcharge = 0) {
     $primeNet = $primeBase;
-    
     // Multiplier par tous les coefficients
     foreach ($coefficients as $coef) {
         $primeNet *= $coef;

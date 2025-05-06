@@ -203,7 +203,7 @@ if (!isset($_SESSION['user_id'])) {
                             <label for="alarme">Alarme</label>
                         </div>
                         <div>
-                            <input type="checkbox" id="detecteur_fumee" name="securite[]" value="detecteur_fumee">
+                            <input type="checkbox" id="detecteur_fumee" name="securite[]" value="detecteur fumee">
                             <label for="detecteur_fumee">Détecteur de fumée</label>
                         </div>
                         <div>

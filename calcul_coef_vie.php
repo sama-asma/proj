@@ -4,9 +4,9 @@
  */
 
 function calculerAge($date_naissance) {
-    $date_naissance_obj = new DateTime($date_naissance);
-    $aujourdhui = new DateTime();
-    return $aujourdhui->diff($date_naissance_obj)->y;
+    $annee_naissance = date('Y', strtotime($date_naissance));
+    $annee_actuelle = date('Y');
+    return $annee_actuelle - $annee_naissance;
 }
 
 function calculerCoeff($data) {

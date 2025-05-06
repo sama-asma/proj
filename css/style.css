@@ -217,40 +217,40 @@ body {
 
 
 /* Section des contrats récents */
-.recent-contracts {
+.recent-contracts, .all-contracts {
     background: #fff;
     padding: 2rem;
     border-radius: 10px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
-.recent-contracts h2 {
+.recent-contracts h2, .all-contracts h2 {
     font-size: 1.8rem;
     margin-bottom: 1.5rem;
     color: #333;
 }
 
-.recent-contracts table {
+.recent-contracts table,.all-contracts table {
     width: 100%;
     border-collapse: collapse;
 }
 
-.recent-contracts th, .recent-contracts td {
+.recent-contracts th, .recent-contracts td, .all-contracts th, .all-contracts td {
     padding: 1rem;
     text-align: left;
     border-bottom: 1px solid #ddd;
 }
 
-.recent-contracts th {
+.recent-contracts th,.all-contracts th {
     background-color: #f4f4f9;
     font-weight: 600;
     color: #555;
 }
 
-.recent-contracts tr:hover {
+.recent-contracts tr:hover, .all-contracts tr:hover {
     background-color: #f9f9f9;
 }
-.recent-contracts tbody .btn-view {
+.recent-contracts tbody .btn-view, .all-contracts tbody .btn-view {
   display: inline-block;
   padding: 5px 10px;
   background: #e74c3c;
@@ -259,11 +259,11 @@ body {
   text-decoration: none;
 }
 
-.recent-contracts tbody .btn-view:hover {
+.recent-contracts tbody .btn-view:hover, .all-contracts tbody .btn-view:hover {
   background: #c0392b;
 }
 
-.recent-contracts tbody .btn-view i {
+.recent-contracts tbody .btn-view i, .all-contracts tbody .btn-view i {
   margin-right: 5px;
 }
 
@@ -592,6 +592,61 @@ div.alert-danger::before {
 
 .select-btn:hover {
   background-color: #45a049;
+}
+
+/* Styles pour la pagination et le tri */
+.all-contracts .pagination {
+  margin: 20px 0;
+  text-align: center;
+}
+.all-contracts .pagination a, .all-contracts .pagination span {
+  display: inline-block;
+  padding: 8px 12px;
+  margin: 0 3px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  text-decoration: none;
+  color: #333;
+}
+.all-contracts .pagination a:hover {
+  background-color: #f5f5f5;
+}
+.all-contracts .pagination .active {
+  background-color: #4CAF50;
+  color: white;
+  border: 1px solid #4CAF50;
+}
+.sort-options {
+  margin-bottom: 15px;
+  text-align: right;
+}
+.sort-link {
+  padding: 8px 12px;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+  text-decoration: none;
+  color: #333;
+}
+.sort-link:hover {
+  background-color: #e0e0e0;
+}
+.sort-link i {
+  margin-left: 5px;
+}
+.search-summary {
+  margin: 10px 0 20px;
+  padding: 10px;
+  background-color: #f9f9f9;
+  border-radius: 4px;
+  border-left: 4px solid #4CAF50;
+}
+.search-summary a {
+  color: #4CAF50;
+  margin-left: 10px;
+  text-decoration: none;
+}
+.search-summary a:hover {
+  text-decoration: underline;
 }
 
 .error {

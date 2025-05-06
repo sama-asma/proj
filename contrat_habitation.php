@@ -17,7 +17,7 @@ class ContratHabitationAssurance extends ContratPDF {
         $this->InfoLineDouble('Localisation:', $localisation, 'Matériaux:', $materiaux);
         $this->InfoLineDouble('État toiture:', $etat_toiture, 'Occupation:', $occupation);
         $this->InfoLineDouble('Nombre occupants:', $nb_occupants, 'Capital mobilier:', number_format($capital_mobilier, 2, ',', ' ') . ' DZD');
-        $this->Ln(10);
+        $this->Ln(1);
     }
     
     // Afficher les garanties spécifiques habitation
@@ -105,7 +105,8 @@ try {
         'annee_construction' => $contrat['annee_construction'],
         'superficie' => $contrat['superficie'],
         'capital_mobilier' => $contrat['capital_mobilier'],
-        'antecedents' => $contrat['antecedents']
+        'antecedents' => $contrat['antecedents'],
+        'occupation' => $contrat['occupation']
     ]);
 
 
@@ -121,20 +122,18 @@ try {
     $pdf->InfoLine('Date de souscription :', date("d/m/Y", strtotime($contrat['date_souscription'])));
     $pdf->InfoLine('Date d\'expiration :', date("d/m/Y", strtotime($contrat['date_expiration'])));
     $pdf->InfoLine('Prime annuelle :', number_format($contrat['montant_prime'], 2, ',', ' ') . ' DZD');
-    $pdf->Ln(5);
+    $pdf->Ln(1);
     
     // Informations du souscripteur
     $pdf->SectionTitle('INFORMATIONS DU SOUSCRIPTEUR');
-    $pdf->InfoLine('Nom et prénom :', $contrat['nom_client'] . ' ' . $contrat['prenom_client']);
-    $pdf->InfoLine('Téléphone :', $contrat['telephone']);
-    $pdf->InfoLine('Email :', $contrat['email']);
-    $pdf->InfoLine('Date de Naissance :', date('d/m/Y', strtotime($contrat['date_naissance'])));
-    $pdf->Ln(5);
+    $pdf->InfoLineDouble('Nom et prénom :', $contrat['nom_client'] . ' ' . $contrat['prenom_client'], 'Téléphone :', $contrat['telephone']);
+    $pdf->InfoLineDouble('Email :', $contrat['email'], 'Date de Naissance :', date('d/m/Y', strtotime($contrat['date_naissance'])));
+    $pdf->Ln(1);
     
     // Adresse du logement
     $pdf->SectionTitle('ADRESSE DU LOGEMENT');
     $pdf->InfoLine('Adresse :', $contrat['adresse_detail'] . ', ' . $contrat['commune_nom'] . ', ' . $contrat['wilaya_nom']);
-    $pdf->Ln(5);
+    $pdf->Ln(1);
     
     // Détails du logement
     $pdf->addDetailsLogement(

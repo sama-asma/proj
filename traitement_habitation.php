@@ -177,7 +177,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <body>
             <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
             <script>
-                Swal.fire("Contrat d'habitation généré avec succès !").then(() => {
+                Swal.fire(
+                    {
+                    title: "Contrat généré avec succès !",
+                    text: "Le contrat d'assurance habitation a été créé",
+                    icon: "success"
+                }).then(() => {
                     window.open("contrat_habitation.php?contrat=$contrat_id", "_blank");
                     window.location.href = "dashboard.php";
                 });

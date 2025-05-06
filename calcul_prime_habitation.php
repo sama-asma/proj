@@ -11,10 +11,11 @@ if (!isset($_SESSION['user_id'])) {
 $data = [
     'superficie' => floatval($_POST['superficie'] ?? 0),
     'type_logement' => $_POST['type_logement'] ?? null,
-    'annee_construction' = intval($_POST['annee_construction']) ?? date('Y'),
+    'annee_construction' => intval($_POST['annee_construction']) ?? date('Y'),
     'materiaux' => $_POST['materiaux'] ?? null,
     'etat_toiture' => $_POST['etat_toiture'] ?? null,
-    'statut_occupation' => $_POST['statut_occupation'] ?? null,
+    'statut_occupation' => $_POST['statut_logement'] ?? null,
+    'occupation' => $_POST['occupation'] ?? null,
     'nb_occupants' => intval($_POST['nb_occupants'] ?? 1),
     'capital_mobilier' => floatval($_POST['capital_mobilier'] ?? 0),
     'localisation' => $_POST['localisation'] ?? null,

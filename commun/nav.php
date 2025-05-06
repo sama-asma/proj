@@ -26,7 +26,7 @@ if (!isset($_SESSION['user_id'])) {
                 </a>
             </li>
             <li>
-                <a href="#">
+                <a href="./contrats.php">
                     <span class="icon">
                        <i class="fas fa-file-contract"></i>
                     </span>

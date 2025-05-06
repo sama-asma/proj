@@ -36,9 +36,9 @@ function getFacteursVehicule() {
 
 // Calcul de l'âge du conducteur
 function calculerAgeConducteur($date_naissance) {
-    $date_naissance_obj = new DateTime($date_naissance);
-    $aujourdhui = new DateTime();
-    return $aujourdhui->diff($date_naissance_obj)->y; // y pour récupérer l'année
+    $annee_naissance = date('Y', strtotime($date_naissance));
+    $annee_actuelle = date('Y');
+    return $annee_actuelle - $annee_naissance;
 }
 
 // Calcul de tous les coefficients

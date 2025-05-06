@@ -258,7 +258,6 @@ document.addEventListener('DOMContentLoaded', function() {
             afficherResultatPrime(data.prime, data.primeNet);
             document.getElementById('souscrireBtn').style.display = 'inline-block';
             document.getElementById('formPrim').dataset.prime = data.prime; // ajouter l'attribut data-prime en html
-            document.getElementById('formPrim').dataset.franchise = data.franchise;
         } catch (error) {
             console.error("Erreur:", error);
             alert("Erreur lors du calcul: " + error.message);
@@ -282,9 +281,10 @@ document.addEventListener('DOMContentLoaded', function() {
         // Affichage des résultats
         detailDiv.innerHTML = `
         <div class="prime-result">
-            <h3>Détails de la prime</h3>
             <p>Prime Net: ${primeNet.toLocaleString('fr-FR')} DZD</p>
-            <p>Prime ajustée: ${prime.toLocaleString('fr-FR')} DZD</p>
+            <p>Prime avec Surcharge: ${primeAvecSurcharge.toLocaleString('fr-FR')} DZD</p>
+            <p>Prime avec Réduction: ${primeAvecReduction.toLocaleString('fr-FR')}
+            <p>Prime ajustée: <strong>${prime.toLocaleString('fr-FR')} DZD <strong></p>
             <p>Validité: Du ${document.getElementById('date_souscription').value} au ${document.getElementById('date_expiration').value}</p>
             <p>Superficie assurée: ${document.getElementById('superficie').value} m²</p>
             <p>Capital mobilier: ${document.getElementById('capital_mobilier').value} DZD</p>
@@ -312,7 +312,6 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         document.getElementById('prime').value = this.dataset.prime;
-        document.getElementById('franchise').value = this.dataset.franchise;
         const submitBtn = document.getElementById('souscrireBtn');
         submitBtn.disabled = true;
         submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Souscription en cours...';
