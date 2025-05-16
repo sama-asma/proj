@@ -70,6 +70,22 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    // Validation pour la date de naissance
+    const dateNaissanceInput = document.getElementById('date_naissance');
+    dateNaissanceInput.addEventListener('blur', function() {
+        if (!this.value.trim()) {
+            showError(this, 'Ce champ est obligatoire');
+        } else {
+            const today = new Date();
+            const birthDate = new Date(this.value);
+            if (birthDate >= today) {
+                showError(this, 'La date de naissance doit être antérieure à aujourd\'hui');
+            } else {
+                clearError(this);
+            }
+        }
+    });
+
     // Gestion de l'affichage conditionnel de la section entreprise
     const typeClientInput = document.getElementById('type_client');
     const entrepriseSection = document.getElementById('entrepriseSection');
@@ -191,13 +207,22 @@ document.addEventListener('DOMContentLoaded', function() {
             if (!response.ok || !data.success) {
                 throw new Error(data.message || 'Erreur lors du calcul');
             }
-            afficherResultatPrime(data.prime, data.primeNet);
+            // Validation que prime sont des nombres positifs
+            const prime = parseFloat(data.prime);
+            if (isNaN(prime) ||  prime <= 0 ) {
+                throw new Error('Les valeurs de prime doivent être des nombres positifs valides');
+            }
+            afficherResultatPrime(prime, data.primeNet);
             document.getElementById('souscrireBtn').style.display = 'inline-block';
-            document.getElementById('formCyberAttaque').dataset.prime = data.prime;
-            document.getElementById('formCyberAttaque').dataset.franchise = data.franchise;
+            document.getElementById('formCyberAttaque').dataset.prime = prime;
         } catch (error) {
             console.error("Erreur:", error);
             alert("Erreur lors du calcul: " + error.message);
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message';
+            errorDiv.style.color = 'red';
+            errorDiv.textContent = error.message;
+            document.getElementById('resultatCalcul').appendChild(errorDiv);
         } finally {
             btnCalculer.disabled = false;
             btnCalculer.textContent = 'Calculer la prime';
@@ -238,7 +263,6 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         document.getElementById('prime').value = this.dataset.prime;
-        document.getElementById('franchise').value = this.dataset.franchise;
         const submitBtn = document.getElementById('souscrireBtn');
         submitBtn.disabled = true;
         submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Souscription en cours...';
@@ -292,7 +316,8 @@ document.addEventListener('DOMContentLoaded', function() {
                                 data-prenom="${client.prenom || ''}"
                                 data-telephone="${client.telephone}"
                                 data-email="${client.email}"
-                                data-type_client="${client.type_client}">
+                                data-type_client="${client.type_client}"
+                                data-date_naissance="${client.date_naissance || ''}">
                             Sélectionner
                         </button>
                     `;
@@ -317,6 +342,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 document.getElementById('telephone').value = btn.dataset.telephone;
                 document.getElementById('email').value = btn.dataset.email;
                 document.getElementById('type_client').value = btn.dataset.type_client;
+                document.getElementById('date_naissance').value = btn.dataset.date_naissance;
                 typeClientInput.dispatchEvent(new Event('change')); // Déclencher l'affichage conditionnel
                 resultatsDiv.style.display = 'none';
                 inputRecherche.value = '';

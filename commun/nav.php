@@ -5,6 +5,7 @@ if (!isset($_SESSION['user_id'])) {
 ?>
 <head>
     <link rel="stylesheet" href="css/style.css">
+
 </head>
 <!-- navigation -->
 <div class="navigation">
@@ -45,7 +46,7 @@ if (!isset($_SESSION['user_id'])) {
             if(isset($_SESSION['role']) && $_SESSION['role'] == 'admin'){
             echo <<<HTML
             <li>
-                <a href="#">
+                <a href="./index1.php">
                     <span class="icon">
                        <i class="fas fa-cog"></i>
                     </span>

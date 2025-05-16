@@ -60,7 +60,7 @@ if (!isset($_SESSION['user_id'])) {
                 <h2>Informations du Client</h2>
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="nom_client" class="required">Nom (ou raison sociale)</label>
+                        <label for="nom_client" class="required">Nom</label>
                         <input type="text" id="nom_client" name="nom_client" required>
                     </div>
                     <div class="form-group">
@@ -80,6 +80,10 @@ if (!isset($_SESSION['user_id'])) {
                 </div>
                 <div class="form-row">
                     <div class="form-group">
+                        <label for="date_naissance" class="required">Date de naissance</label>
+                        <input type="date" id="date_naissance" name="date_naissance" required>
+                    </div>
+                    <div class="form-group">
                         <label for="type_client" class="required">Type de client</label>
                         <select id="type_client" name="type_client" required>
                             <option value="">-- Sélectionnez --</option>
@@ -91,15 +95,15 @@ if (!isset($_SESSION['user_id'])) {
             </div>
 
             <!-- Informations sur l'entreprise (si applicable) -->
-            <div class="form-section" id="entrepriseSection" style="display:none;">
+            <div class="form-section" id="entrepriseSection">
                 <h2>Informations sur l'Entreprise</h2>
                 <div class="form-row">
                     <div class="form-group">
                         <label for="taille_entreprise" class="required">Taille de l'entreprise</label>
                         <select id="taille_entreprise" name="taille_entreprise" required>
                             <option value="">-- Sélectionnez --</option>
-                            <option value="tpe">TPE (<10 employés)</option>
-                            <option value="pme">PME (10-250 employés)</option>
+                            <option value="petite">TPE (<=10 employés)</option>
+                            <option value="moyenne">PME (10-250 employés)</option>
                             <option value="grande">Grande entreprise (>250 employés)</option>
                         </select>
                     </div>
@@ -130,12 +134,12 @@ if (!isset($_SESSION['user_id'])) {
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="historique_attaques">Historique de cyberattaques</label>
-                        <select id="historique_attaques" name="historique_attaques">
+                        <label for="historique_attaques" class="required">Historique de cyberattaques</label>
+                        <select id="historique_attaques" name="historique_attaques" required>
                             <option value="">-- Sélectionnez --</option>
-                            <option value="aucune">Aucune</option>
-                            <option value="mineure">Mineure(s)</option>
-                            <option value="majeure">Majeure(s)</option>
+                            <option value="aucun">Aucune</option>
+                            <option value="mineur">Mineure(s)</option>
+                            <option value="majeur">Majeure(s)</option>
                         </select>
                     </div>
                 </div>
@@ -213,10 +217,6 @@ if (!isset($_SESSION['user_id'])) {
                 </div>
             </div>
 
-            <div>
-                <input type="hidden" name="prime_calculee" id="prime">
-                <input type="hidden" name="franchise" id="franchise">
-            </div>
 
             <div class="buttons-container">
                 <button type="button" id="calculerPrimeBtn">Calculer la prime</button>
