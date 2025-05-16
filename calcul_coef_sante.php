@@ -46,7 +46,7 @@ function calculerCoefficientsSante($data) {
     
     // Âge de l'assuré (coefficient progressif)
     $age = calculerAgeAssure($data['date_naissance']);
-    $coefficients['coef_age'] = min(1.0 + ($age / 100), 2.0); // Max 2.0 - Le risque médical augmente progressivement avec l'âge
+    $coefficients['coef_age'] = min(1.0 + ($age / 100), 2.0); // Max 2.0 Le risque médical augmente progressivement avec l'âge
 
     // IMC (Indice de Masse Corporelle)
     $imc = calculerIMC($data['poids'], $data['taille']);

@@ -216,7 +216,7 @@ if (!isset($_SESSION['user_id'])) {
                     </div>
                 </div>
             </div>
-
+            <input type="hidden" name="prime_calculee" id="prime">
 
             <div class="buttons-container">
                 <button type="button" id="calculerPrimeBtn">Calculer la prime</button>

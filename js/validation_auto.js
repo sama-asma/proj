@@ -327,7 +327,6 @@
             afficherResultatPrime(data.prime, data.primeNet);
             document.getElementById('souscrireBtn').style.display = 'inline-block';
             document.getElementById('formPrim').dataset.prime = data.prime; // ajouter l'attribut data-prime en html
-            document.getElementById('formPrim').dataset.franchise = data.franchise;
         } catch (error) {
             console.error("Erreur:", error);
             alert("Erreur lors du calcul: " + error.message);
@@ -381,7 +380,7 @@
             return;
         }
         document.getElementById('prime').value = this.dataset.prime;
-        document.getElementById('franchise').value = this.dataset.franchise;
+        // document.getElementById('franchise').value = this.dataset.franchise;
         const submitBtn = document.getElementById('souscrireBtn');
         submitBtn.disabled = true;
         submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Souscription en cours...';

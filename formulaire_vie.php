@@ -163,10 +163,6 @@ if (!isset($_SESSION['user_id'])) {
                         <input type="checkbox" id="maladie_cardiaque" name="antecedents[]" value="maladie_cardiaque">
                         <label for="maladie_cardiaque">Maladie cardiaque</label>
                     </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="avc" name="antecedents[]" value="avc">
-                        <label for="avc">AVC ou antécédent cérébral</label>
-                    </div>
                 </div>
             </div>
             <!-- Réductions et surcharges-->

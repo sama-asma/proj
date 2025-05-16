@@ -26,7 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $id_garantie = $_POST['id_garantie'] ?? '';
     $date_souscription = $_POST['date_souscription'] ?? '';
     $date_expiration = $_POST['date_expiration'] ?? '';
-    $prime = floatval($_POST['prime'] ?? 0);
+    $prime = floatval($_POST['prime_calculee'] ?? 0);
 
     // Validation des données avec une boucle
     $fields = [

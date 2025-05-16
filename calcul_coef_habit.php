@@ -1,7 +1,4 @@
 <?php
-/**
- * Fichier contenant les fonctions de calcul des coefficients d'assurance habitation
- */
 
 // Facteurs de calcul pour les types de logement
 function getFacteursHabitation() {
@@ -57,7 +54,6 @@ function calculerCoefficientsHabitation($data) {
     $facteurs = getFacteursHabitation();
     $current_year = date('Y');
     
-    // Si l'âge du logement n'est pas déjà calculé, le calculer
     if (!isset($data['age_logement']) && isset($data['annee_construction'])) {
         $data['age_logement'] = calculerAgeLogement($data['annee_construction']);
     }
@@ -116,7 +112,7 @@ function calculerCoefficientsHabitation($data) {
    
     // Coefficient capital mobilier
     $capital = $data['capital_mobilier'] ?? 0;
-    $coefficients['coef_capital'] = round(min(1.0 + ($capital / 7000000), 2.8), 2);
+    $coefficients['coef_capital'] = round(min(1.0 + ($capital / 1000000), 2.8), 2);
 
     // Coefficient sinistres antérieurs
     $antecedents = $data['antecedents'] ?? 0;

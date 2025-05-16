@@ -1,7 +1,4 @@
 <?php
-/**
- * Fichier contenant les fonctions de calcul des coefficients d'assurance auto
- */
 
 // Facteurs de calcul pour les modèles de véhicules
 function getFacteursVehicule() {

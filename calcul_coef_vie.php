@@ -1,7 +1,4 @@
 <?php
-/**
- * Fichier de calcul des coefficients et primes pour l'assurance vie - Version corrigée
- */
 
 function calculerAge($date_naissance) {
     $annee_naissance = date('Y', strtotime($date_naissance));
@@ -10,7 +7,6 @@ function calculerAge($date_naissance) {
 }
 
 function calculerCoeff($data) {
-    // Coefficients de base plus réalistes
     $age = calculerAge($data['date_naissance']);
     
     // Coefficient âge (augmentation progressive après 40 ans)
@@ -20,8 +16,7 @@ function calculerCoeff($data) {
     $coef_etat_sante = match($data['etat_sante']) {
         'bon' => 1.0,
         'moyen' => 1.3,
-        'mauvais' => 1.8,
-        default => 1.0
+        'mauvais' => 1.8
     };
 
     // Antécédents médicaux (max 1.5)
@@ -33,7 +28,6 @@ function calculerCoeff($data) {
             'cancer' => 0.25,
             'maladie_cardiaque' => 0.20,
             'asthme' => 0.05,
-            'avc' => 0.30,
             default => 0
         };
     }
@@ -43,8 +37,7 @@ function calculerCoeff($data) {
     $coef_fumeur = match($data['fumeur']) {
         'non' => 1.0,
         'occasionnel' => 1.2,
-        'regulier' => 1.5,
-        default => 1.0
+        'regulier' => 1.5
     };
 
     // Sexe
