@@ -1,23 +1,15 @@
 <?php
 require_once('contrat_pdf.php');
 
-class ContratProtectionJuridiqueAssurance extends ContratPDF {
-    // Titre spécifique pour les contrats de protection juridique
+class ContratCyberAssurance extends ContratPDF {
+    // Titre spécifique pour les contrats cyber
     protected function getContractTitle() {
-        return 'CONTRAT D\'ASSURANCE PROTEC-JURI';
+        return 'CONTRAT D\'ASSURANCE CYBER';
     }
 
-    // Override pour afficher le titre avec MultiCell et police plus petite
-    public function AddTitle() {
-        $this->SetMargins(20, 15, 20); // Marges ajustées
-        $this->SetFont('DejaVu', 'B', 12); // Réduire la taille de la police à 12
-        $this->MultiCell(0, 10, $this->getContractTitle(), 0, 'C'); // Utiliser MultiCell pour le retour à la ligne
-        $this->Ln(10);
-    }
-
-    // Afficher les garanties spécifiques à la protection juridique
-    public function addGarantiesProtectionJuridique($nom_garantie, $description, $franchise) {
-        $this->SectionTitle('FORMULE ET GARANTIES INCLUSES');
+    // Afficher les garanties spécifiques cyber
+    public function addGarantiesCyber($nom_garantie, $description, $franchise) {
+        $this->SectionTitle('FORMULE ET GARANTIES scoffed');
         $this->SetFont('DejaVu', 'B', 11);
         $this->Cell(0, 6, 'Formule : ' . $nom_garantie, 0, 1);
         $this->Ln(5);
@@ -44,6 +36,21 @@ class ContratProtectionJuridiqueAssurance extends ContratPDF {
         }
         $this->Ln(10);
     }
+
+    // Afficher les détails spécifiques du contrat cyber
+    public function addCyberDetails($type_client, $taille_entreprise, $secteur_activite, $chiffre_affaires, $niveau_securite, $historique_attaques, $donnees_sensibles) {
+        $this->SectionTitle('DÉTAILS DE L\'ASSURANCE CYBERATTAQUE');
+        $this->InfoLine('Type de client :', ucfirst($type_client));
+        if ($type_client === 'entreprise') {
+            $this->InfoLine('Taille de l\'entreprise :', ucfirst($taille_entreprise));
+            $this->InfoLine('Secteur d\'activité :', $secteur_activite);
+            $this->InfoLine('Chiffre d\'affaires :', number_format($chiffre_affaires, 2, ',', ' ') . ' DZD');
+        }
+        $this->InfoLine('Niveau de sécurité :', ucfirst($niveau_securite));
+        $this->InfoLine('Historique des cyberattaques :', ucfirst($historique_attaques));
+        $this->InfoLine('Données sensibles :', ucfirst($donnees_sensibles));
+        $this->Ln(5);
+    }
 }
 
 // Vérification de l'ID du contrat
@@ -60,11 +67,11 @@ try {
     mysqli_set_charset($conn, "utf8");
     // Récupération des informations du contrat
     $stmt = $conn->prepare("
-        SELECT c.*, p.*, cl.*, g.nom_garantie, g.description, g.prime_base, g.franchise
+        SELECT c.*, ac.*, cl.*, g.nom_garantie, g.description, g.prime_base, g.franchise
         FROM contrats c
-        JOIN assurance_protection_juridique p ON c.id_contrat = p.id_contrat
+        JOIN assurance_cyberattaque ac ON c.id_contrat = ac.id_contrat
         JOIN client cl ON c.id_client = cl.id_client
-        JOIN garanties g ON p.id_garantie = g.id_garantie
+        JOIN garanties g ON ac.id_garantie = g.id_garantie
         WHERE c.id_contrat = ?
     ");
     $stmt->bind_param("i", $id_contrat);
@@ -80,47 +87,46 @@ try {
     die("Erreur lors de la récupération des données : " . $e->getMessage());
 }
 
-// Définir les coefficients
-$coef_situation_pro = [
-    'salarie' => 1.0,
-    'independant' => 1.2,
-    'retraite' => 0.9,
-    'sans_emploi' => 1.1,
-][$contrat['situation_pro']] ?? 1.0;
+// Définir les coefficients pour l'affichage (basé sur calcul_prime_cyber_attaque.php)
+$coef_taille_entreprise = ($contrat['type_client'] === 'entreprise') ? match ($contrat['taille_entreprise']) {
+    'petite' => 0.8,
+    'moyenne' => 1.0,
+    'grande' => 1.3,
+    default => 1.0,
+} : 1.0;
 
-$coef_secteur_activite = [
-    'agriculture' => 0.9,
-    'industries_extractives' => 1.4,
-    'industrie_manufacturiere' => 1.2,
-    'commerce' => 0.95,
-    'information_communication' => 1.1,
-    'sante_humaine' => 1.5,
-    'activites_extra_territoriales' => 1.3,
-    'education' => 0.9,
-][$contrat['secteur_activite']] ?? 1.0;
+$coef_donnees_sensibles = match ($contrat['donnees_sensibles']) {
+    'aucune' => 0.9,
+    'personnelles' => 1.1,
+    'financieres' => 1.3,
+    'confidentielles' => 1.5,
+    default => 1.0,
+};
 
-$coef_type_litige = [
-    'personnel' => 1.0,
-    'professionnel' => 1.3,
-    'mixte' => 1.5,
-][$contrat['type_litige']] ?? 1.0;
+$coef_niveau_securite = match ($contrat['niveau_securite']) {
+    'basique' => 1.3,
+    'intermediaire' => 1.0,
+    'avance' => 0.8,
+    default => 1.0,
+};
 
-$coef_frequence_litige = [
-    'rare' => 0.9,
-    'occasionnel' => 1.0,
-    'frequent' => 1.2,
-][$contrat['frequence_litige']] ?? 1.0;
+$coef_historique_attaques = match ($contrat['historique_attaques']) {
+    'aucun' => 0.9,
+    'mineur' => 1.2,
+    'majeur' => 1.5,
+    default => 1.0,
+};
 
 // Préparer les coefficients pour l'affichage
 $coefficients = [
-    'Situation professionnelle' => $coef_situation_pro,
-    'Secteur d\'activité' => $coef_secteur_activite,
-    'Type de litige' => $coef_type_litige,
-    'Fréquence des litiges' => $coef_frequence_litige
+    'Taille de l\'entreprise' => $coef_taille_entreprise,
+    'Données sensibles' => $coef_donnees_sensibles,
+    'Niveau de sécurité' => $coef_niveau_securite,
+    'Historique des cyberattaques' => $coef_historique_attaques
 ];
 
 // Création du PDF
-$pdf = new ContratProtectionJuridiqueAssurance();
+$pdf = new ContratCyberAssurance();
 $pdf->AliasNbPages(); // Pour {nb} dans le pied de page
 $pdf->AddPage();
 
@@ -140,11 +146,16 @@ $pdf->InfoLine('Email :', $contrat['email']);
 $pdf->InfoLine('Date de Naissance :', date('d/m/Y', strtotime($contrat['date_naissance'])));
 $pdf->Ln(5);
 
-// Informations spécifiques à l'assurance protection juridique
-$pdf->SectionTitle('DÉTAILS DE L\'ASSURANCE');
-$pdf->InfoLineDouble('profession :  ',  ucfirst($contrat['situation_pro']), 'Secteur d\'activité :', ucfirst($contrat['secteur_activite']));
-$pdf->InfoLineDouble('Type de litige :', ucfirst($contrat['type_litige']), 'Fréquence des litiges :', ucfirst($contrat['frequence_litige']));
-$pdf->Ln(5);
+// Détails spécifiques cyber
+$pdf->addCyberDetails(
+    $contrat['type_client'],
+    $contrat['taille_entreprise'],
+    $contrat['secteur_activite'],
+    $contrat['chiffre_affaires'],
+    $contrat['niveau_securite'],
+    $contrat['historique_attaques'],
+    $contrat['donnees_sensibles']
+);
 
 // Détails de la prime
 $pdf->addPrimeDetails(
@@ -156,10 +167,10 @@ $pdf->addPrimeDetails(
 );
 
 // Garanties
-$pdf->addGarantiesProtectionJuridique($contrat['nom_garantie'], $contrat['description'], $contrat['franchise']);
+$pdf->addGarantiesCyber($contrat['nom_garantie'], $contrat['description'], $contrat['franchise']);
 
 // Signatures
 $pdf->AddSignatureBlock();
-$pdf->SetTitle('Contrat d\'assurance protection juridique');
+$pdf->SetTitle('Contrat d\'assurance cyberattaque');
 $pdf->Output('Contrat_' . $contrat['numero_contrat'] . '.pdf', 'I');
 ?>

@@ -45,7 +45,7 @@ if (!isset($_SESSION['user_id'])) {
                 <div class="form-row">
                     <div class="form-group">
                         <label for="recherche_client">Rechercher un client existant</label>
-                        <input type="text" id="recherche_client" name="recherche_client" placeholder="Nom, prénom ou entreprise">
+                        <input type="text" id="recherche_client" name="recherche_client" placeholder="Nom, prénom">
                         <button type="button" id="btnRechercheClient">Rechercher</button>
                     </div>
                 </div>
