@@ -141,7 +141,7 @@ $primeNet = ($primeBase * $data['montant_emprunt'] / 100) * $coef_age * $coef_et
             * $coef_montant_pret * $coef_duree_pret * $coef_taux_interet * $coef_revenu_mensuel * $coef_fumeur;
 
 // Calcul de la prime annuelle (prime nette divisée par la durée, puis ajustée par réduction/surcharge)
-$primeAnnuelle = ($primeNet / $data['duree_emprunt']) * (1 - $data['reduction'] / 100) * (1 + $data['surcharge'] / 100);
+$primeAnnuelle = $primeNet* (1 - $data['reduction'] / 100) * (1 + $data['surcharge'] / 100);
 
 // Débogage : Afficher les résultats intermédiaires
 error_log("primeNet: $primeNet, primeAnnuelle: $primeAnnuelle");

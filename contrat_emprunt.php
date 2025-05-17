@@ -103,7 +103,7 @@ $aujourdhui = new DateTime();
 $age = $aujourdhui->diff($date_naissance)->y;
 
 // Définir les coefficients
-$coef_age = ($age < 30) ? 0.9 : (($age > 60) ? 1.3 : 1.0);
+$coef_age = ($age < 30) ? 0.9 : (($age > 60) ? 1.5 : 1.0);
 $coef_etat_sante = [
     'excellent' => 0.8,
     'bon' => 0.9,
@@ -126,6 +126,9 @@ $coef_type_pret = [
     'consommation' => 1.1,
     'auto' => 1.05,
 ][$contrat['type_pret']] ?? 1.0;
+$coef_montant_pret = ($contrat['montant_emprunt'] < 5000000) ? 1.0 : (($contrat['montant_emprunt'] > 20000000) ? 1.3 : 1.15);
+$coef_duree_pret = ($contrat['duree_emprunt'] <= 5) ? 0.9 : (($contrat['duree_emprunt'] > 20) ? 1.3 : 1.1);
+$coef_revenu_mensuel = ($contrat['revenu_mensuel'] < 200000) ? 1.2 : (($contrat['revenu_mensuel'] > 500000) ? 0.9 : 1.0);
 
 // Préparer les coefficients pour l'affichage
 $coefficients = [
@@ -133,7 +136,10 @@ $coefficients = [
     'État de santé' => $coef_etat_sante,
     'Fumeur' => $coef_fumeur,
     'Situation professionnelle' => $coef_situation_professionnelle,
-    'Type de prêt' => $coef_type_pret
+    'Type de prêt' => $coef_type_pret,
+    'Montant du prêt' => $coef_montant_pret,
+    'Durée du prêt' => $coef_duree_pret,
+    'Revenu mensuel' => $coef_revenu_mensuel
 ];
 
 // Vérifications des données avant génération PDF
