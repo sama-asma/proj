@@ -209,7 +209,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (!response.ok || !data.success) {
                 throw new Error(data.message || 'Erreur lors du calcul');
             }
-            afficherResultatPrime(data.prime, data.primeNet);
+            afficherResultatPrime(data.prime, data.primeNet, data.franchise);
             document.getElementById('souscrireBtn').style.display = 'inline-block';
             document.getElementById('formProtectionJuridique').dataset.prime = data.prime;
             document.getElementById('formProtectionJuridique').dataset.franchise = data.franchise;
@@ -223,14 +223,23 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Fonction pour afficher le résultat de la prime
-    function afficherResultatPrime(prime, primeNet) {
+    function afficherResultatPrime(prime, primeNet, franchise) {
         const resultatDiv = document.getElementById('resultatCalcul');
         const detailDiv = document.getElementById('detailPrime');
+    
+        const surcharge = parseFloat(document.getElementById('surcharge').value) / 100 || 0;
+        const reduction = parseFloat(document.getElementById('reduction').value) / 100 || 0;
+    
+        const primeAvecSurcharge = primeNet * (1 + surcharge);
+        const primeAvecReduction = primeAvecSurcharge * (1 - reduction);
     
         detailDiv.innerHTML = `
             <div class="prime-result">
                 <p>Prime Net: ${primeNet.toLocaleString('fr-FR')} DZD</p>
+                <p>Prime avec Surcharge: <strong>${primeAvecSurcharge.toLocaleString('fr-FR')} DZD</strong></p>
+                <p>Prime avec Réduction: <strong>${primeAvecReduction.toLocaleString('fr-FR')} DZD</strong></p>
                 <p>Prime annuelle: <strong>${prime.toLocaleString('fr-FR')} DZD</strong></p>
+                <p>Franchise: <strong>${franchise.toLocaleString('fr-FR')} %</strong></p>
                 <p>Date d'effet: ${document.getElementById('date_souscription').value}</p>
                 <p>Date d'expiration: ${document.getElementById('date_expiration').value}</p>
             </div>

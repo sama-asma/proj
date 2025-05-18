@@ -209,10 +209,10 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             // Validation que prime sont des nombres positifs
             const prime = parseFloat(data.prime);
-            if (isNaN(prime) ||  prime <= 0 ) {
+            if (isNaN(prime) || prime <= 0) {
                 throw new Error('Les valeurs de prime doivent être des nombres positifs valides');
             }
-            afficherResultatPrime(prime, data.primeNet);
+            afficherResultatPrime(prime, data.primeNet, data.franchise);
             document.getElementById('souscrireBtn').style.display = 'inline-block';
             document.getElementById('formCyberAttaque').dataset.prime = prime;
         } catch (error) {
@@ -230,14 +230,23 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Fonction pour afficher le résultat de la prime
-    function afficherResultatPrime(prime, primeNet) {
+    function afficherResultatPrime(prime, primeNet, franchise) {
         const resultatDiv = document.getElementById('resultatCalcul');
         const detailDiv = document.getElementById('detailPrime');
+    
+        const surcharge = parseFloat(document.getElementById('surcharge').value) / 100 || 0;
+        const reduction = parseFloat(document.getElementById('reduction').value) / 100 || 0;
+    
+        const primeAvecSurcharge = primeNet * (1 + surcharge);
+        const primeAvecReduction = primeAvecSurcharge * (1 - reduction);
     
         detailDiv.innerHTML = `
             <div class="prime-result">
                 <p>Prime Net: ${primeNet.toLocaleString('fr-FR')} DZD</p>
+                <p>Prime avec Surcharge: <strong>${primeAvecSurcharge.toLocaleString('fr-FR')} DZD</strong></p>
+                <p>Prime avec Réduction: <strong>${primeAvecReduction.toLocaleString('fr-FR')} DZD</strong></p>
                 <p>Prime annuelle: <strong>${prime.toLocaleString('fr-FR')} DZD</strong></p>
+                <p>Franchise: <strong>${franchise.toLocaleString('fr-FR')} %</strong></p>
                 <p>Date d'effet: ${document.getElementById('date_souscription').value}</p>
                 <p>Date d'expiration: ${document.getElementById('date_expiration').value}</p>
             </div>
@@ -246,7 +255,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Empêcher la soumission par Entrée quand le formulaire est invalide
-    document.getElementById('formCyberAttaque').addEventListener('keydown', function(e) {
+    document.getElementById('form CyberAttaque').addEventListener('keydown', function(e) {
         if (e.key === 'Enter') {
             const submitBtn = document.querySelector('#souscrireBtn');
             if (submitBtn.disabled || !this.dataset.prime) {

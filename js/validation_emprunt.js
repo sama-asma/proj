@@ -194,7 +194,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const surchargeInput = document.getElementById('surcharge');
     surchargeInput.addEventListener('blur', function() {
         const surcharge = parseFloat(this.value);
-        if (!surcharge && surcharge !== 0) {
+        if (isNaN(surcharge)) {
             showError(this, 'Ce champ est obligatoire');
         } else if (surcharge < 0 || surcharge > 100) {
             showError(this, 'La surcharge doit être entre 0 et 100 %');
@@ -289,10 +289,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 body: formData
             });
             const data = await response.json();
+            console.log('Backend Response:', data);
             if (!response.ok || !data.success) {
                 throw new Error(data.message || 'Erreur lors du calcul');
             }
-            afficherResultatPrime(data.prime, data.primeNet);
+            afficherResultatPrime(data.prime, data.primeNet, data.franchise);
             document.getElementById('souscrireBtn').style.display = 'inline-block';
             document.getElementById('formEmprunt').dataset.prime = data.prime;
             document.getElementById('formEmprunt').dataset.franchise = data.franchise;
@@ -310,14 +311,36 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Fonction pour afficher le résultat de la prime
-    function afficherResultatPrime(prime, primeNet) {
+    function afficherResultatPrime(prime, primeNet, franchise) {
         const resultatDiv = document.getElementById('resultatCalcul');
         const detailDiv = document.getElementById('detailPrime');
+    
+        const surchargeElement = document.getElementById('surcharge');
+        const reductionElement = document.getElementById('reduction');
+    
+        console.log('Surcharge Element:', surchargeElement);
+        console.log('Reduction Element:', reductionElement);
+    
+        const surcharge = parseFloat(surchargeElement ? surchargeElement.value : 0) / 100 || 0;
+        const reduction = parseFloat(reductionElement ? reductionElement.value : 0) / 100 || 0;
+    
+        console.log('Surcharge Value:', surcharge);
+        console.log('Reduction Value:', reduction);
+    
+        const primeAvecSurcharge = primeNet * (1 + surcharge);
+        const primeAvecReduction = primeAvecSurcharge * (1 - reduction);
+    
+        console.log('Prime Net:', primeNet);
+        console.log('Prime avec Surcharge:', primeAvecSurcharge);
+        console.log('Prime avec Réduction:', primeAvecReduction);
     
         detailDiv.innerHTML = `
             <div class="prime-result">
                 <p>Prime Net: ${primeNet.toLocaleString('fr-FR')} DZD</p>
+                <p>Prime avec Surcharge: <strong>${primeAvecSurcharge.toLocaleString('fr-FR')} DZD</strong></p>
+                <p>Prime avec Réduction: <strong>${primeAvecReduction.toLocaleString('fr-FR')} DZD</strong></p>
                 <p>Prime annuelle: <strong>${prime.toLocaleString('fr-FR')} DZD</strong></p>
+                <p>Franchise: <strong>${franchise.toLocaleString('fr-FR')} %</strong></p>
                 <p>Date d'effet: ${document.getElementById('date_souscription').value}</p>
                 <p>Date d'expiration: ${document.getElementById('date_expiration').value}</p>
             </div>
