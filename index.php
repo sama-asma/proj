@@ -49,9 +49,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
             <button type="submit" class="login-button">Se connecter</button>
         </form>
-        <div class="login-links">
-            <a href="#">Mot de passe oublié ?</a>
-        </div>
     </div>
 </body>
 </html>
