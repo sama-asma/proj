@@ -118,7 +118,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt = $conn->prepare("INSERT INTO contrats (
                 numero_contrat, id_client, date_souscription, date_expiration, 
                 type_assurance, montant_prime,reduction, surcharge)
-            ) VALUES (?, ?, ?, ?, 'vie', ?, ?, ?)");
+             VALUES (?, ?, ?, ?,'vie', ?, ?, ?)");
         $stmt->bind_param("sissddd", $numero_contrat, $client_id, $date_souscription, $date_expiration, $prime, $reduction, $surcharge);
         $stmt->execute();
         $contrat_id = $stmt->insert_id;

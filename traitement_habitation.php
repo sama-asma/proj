@@ -20,7 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $date_souscription = $_POST['date_souscription'] ?? null;
     $date_expiration = $_POST['date_expiration'] ?? null;
     $prime = isset($_POST['prime_calculee']) ? floatval($_POST['prime_calculee']) : null;
-    $franchise = isset($_POST['franchise']) ? floatval($_POST['franchise']) : null;
+
     
     // Données spécifiques à l'habitation
     $statut_logement = $_POST['statut_logement'] ?? null;
@@ -63,8 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'id_garantie' => "La garantie est requise.",
         'date_souscription' => "La date de souscription est requise.",
         'date_expiration' => "La date d'expiration est requise.",
-        'prime_calculee' => "La prime est requise.",
-        'franchise' => "La franchise est requise."
+        'prime_calculee' => "La prime est requise."
     ];
 
     $errors = [];
@@ -75,7 +74,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $errors[] = $error_message;
         } elseif (in_array($field, ['email']) && !filter_var($_POST[$field], FILTER_VALIDATE_EMAIL)) {
             $errors[] = $error_message;
-        } elseif (in_array($field, ['superficie', 'annee_construction', 'nb_occupants', 'capital_mobilier', 'antecedents', 'id_garantie', 'prime_calculee', 'franchise']) && !is_numeric($_POST[$field])) {
+        } elseif (in_array($field, ['superficie', 'annee_construction', 'nb_occupants', 'capital_mobilier', 'antecedents', 'id_garantie', 'prime_calculee']) && !is_numeric($_POST[$field])) {
             $errors[] = $error_message;
         } elseif ($field === 'date_naissance' && !DateTime::createFromFormat('Y-m-d', $_POST[$field])) {
             $errors[] = $error_message;

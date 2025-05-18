@@ -164,7 +164,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 throw new Error(data.message || 'Erreur lors du calcul');
             }
             
-            afficherResultatPrime(data.prime,data.primeNet, data.capital_garanti, data.franchise);
+            afficherResultatPrime(data.prime,data.primeNet, data.capital_garanti);
             document.getElementById('souscrireBtn').style.display = 'inline-block';
             form.dataset.prime = data.prime;
             form.dataset.capital_garanti = data.capital_garanti;
@@ -178,7 +178,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    function afficherResultatPrime(prime, primeNet, capital, franchise) {
+    function afficherResultatPrime(prime, primeNet, capital) {
         const resultatDiv = document.getElementById('resultatCalcul');
         const detailDiv = document.getElementById('detailPrime');
     
@@ -194,7 +194,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 <p>Prime avec Surcharge: <strong>${primeAvecSurcharge.toLocaleString('fr-FR')} DZD</strong></p>
                 <p>Prime avec Réduction: <strong>${primeAvecReduction.toLocaleString('fr-FR')} DZD</strong></p>
                 <p>Prime annuelle: <strong>${prime.toLocaleString('fr-FR')} DZD</strong></p>
-                <p>Franchise: <strong>${franchise.toLocaleString('fr-FR')} %</strong></p>
                 <p>Capitale garanti: ${capital.toLocaleString('fr-FR')} DZD</p>
                 <p>Date d'effet: ${document.getElementById('date_souscription').value}</p>
                 <p>Date d'expiration: ${document.getElementById('date_expiration').value}</p>
