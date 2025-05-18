@@ -1,22 +1,18 @@
 <?php
 session_start();
-// Vérifier si l'utilisateur est connecté
 if (!isset($_SESSION['user_id'])) {
     header('Location: login.php');
     exit();
 }
 
-// Vérifier si le formulaire a été soumis
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header('Location: formulaire_cyber.php');
     exit();
 }
 
-// Activer l'affichage des erreurs pour le débogage
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
-// Récupérer et nettoyer les données du formulaire
 $nom_client = ucwords(strtolower(trim($_POST['nom_client'] ?? '')));
 $prenom_client = ucwords(strtolower(trim($_POST['prenom_client'] ?? '')));
 $telephone = trim($_POST['telephone'] ?? '');
@@ -36,10 +32,8 @@ $date_souscription = trim($_POST['date_souscription'] ?? '');
 $date_expiration = trim($_POST['date_expiration'] ?? '');
 $prime = floatval($_POST['prime_calculee'] ?? 0);
 
-// Débogage : Afficher les données reçues
 error_log("Données POST reçues : " . print_r($_POST, true));
 
-// Validation des données
 $fields = [
     'nom_client' => "Le nom du client est requis.",
     'prenom_client' => "Le prénom du client est requis.",
@@ -68,7 +62,6 @@ foreach ($fields as $field => $error_message) {
     }
 }
 
-// Validation des longueurs
 if (strlen($nom_client) > 50) {
     $errors[] = "Le nom du client ne doit pas dépasser 50 caractères.";
 }
@@ -82,7 +75,6 @@ if (!empty($email) && strlen($email) > 100) {
     $errors[] = "L'email ne doit pas dépasser 100 caractères.";
 }
 
-// Validation spécifique pour type_client = entreprise
 if ($type_client === 'entreprise') {
     if (!in_array($taille_entreprise, ['petite', 'moyenne', 'grande'])) {
         $errors[] = "La taille de l'entreprise est requise pour une entreprise.";
@@ -92,7 +84,6 @@ if ($type_client === 'entreprise') {
     }
 }
 
-// Validation des autres champs
 if (!in_array($niveau_securite, ['basique', 'intermediaire', 'avance'])) {
     $errors[] = "Niveau de sécurité invalide.";
 }
@@ -115,7 +106,6 @@ if (!empty($errors)) {
 
 require 'db.php';
 
-// Vérifier la connexion à la base de données
 if (!$conn) {
     error_log("Échec de la connexion à la base de données: " . mysqli_connect_error());
     $_SESSION['error'] = "Erreur de connexion à la base de données.";
@@ -123,10 +113,8 @@ if (!$conn) {
     exit();
 }
 
-// Assurer l'encodage UTF-8
 mysqli_set_charset($conn, "utf8");
 
-// Vérifier la garantie
 $stmt = $conn->prepare("SELECT franchise FROM garanties WHERE id_garantie = ?");
 if (!$stmt) {
     error_log("Erreur de préparation de la requête garantie: " . $conn->error);
@@ -148,7 +136,6 @@ if ($result->num_rows > 0) {
 }
 $stmt->close();
 
-// Calculer la prime de base dynamiquement (comme dans calcul_prime_cyber_attaque.php)
 $primeBase = 50000; // Valeur par défaut pour particulier
 if ($type_client === 'entreprise') {
     $primeBase = match ($taille_entreprise) {
@@ -160,7 +147,6 @@ if ($type_client === 'entreprise') {
 }
 error_log("PrimeBase calculée: $primeBase pour type_client: $type_client, taille_entreprise: " . ($taille_entreprise ?? 'N/A'));
 
-// Vérifier la cohérence de la prime
 $primeMin = $primeBase * 0.5;
 $primeMax = $primeBase * 3.5;
 if ($prime < $primeMin || $prime > $primeMax) {
@@ -170,7 +156,6 @@ if ($prime < $primeMin || $prime > $primeMax) {
 }
 
 try {
-    // Vérifier si le client existe déjà
     error_log("Recherche client avec email: $email, téléphone: $telephone");
     $stmt = $conn->prepare("SELECT id_client, nom_client, prenom_client, date_naissance FROM client WHERE LOWER(email) = ? AND telephone = ?");
     if (!$stmt) {
@@ -181,11 +166,9 @@ try {
     $result = $stmt->get_result();
 
     if ($result->num_rows > 0) {
-        // Client existant
         $client = $result->fetch_assoc();
         $client_id = $client['id_client'];
         error_log("Client existant trouvé, id_client: $client_id");
-        // Vérifier si les informations doivent être mises à jour
         if ($client['nom_client'] !== $nom_client || $client['prenom_client'] !== $prenom_client || $client['date_naissance'] !== $date_naissance) {
             error_log("Mise à jour des informations du client: $client_id");
             $stmt->close();
@@ -202,10 +185,8 @@ try {
             $stmt->close();
         }
     } else {
-        // Nouveau client
         error_log("Nouveau client à insérer: nom=$nom_client, prenom=$prenom_client, telephone=$telephone, email=$email, date_naissance=$date_naissance");
         $stmt->close();
-        // Vérifier les contraintes de longueur
         if (strlen($nom_client) > 50) {
             throw new Exception("Le nom du client dépasse 50 caractères.");
         }
@@ -222,7 +203,6 @@ try {
         if (!$stmt) {
             throw new Exception("Erreur de préparation de l'insertion client: " . $conn->error);
         }
-        // Utiliser des valeurs par défaut si vide pour telephone et email
         $telephone = empty($telephone) ? null : $telephone;
         $email = empty($email) ? null : $email;
         $stmt->bind_param("sssss", $nom_client, $prenom_client, $telephone, $email, $date_naissance);
@@ -237,7 +217,6 @@ try {
         $stmt->close();
     }
 
-    // Insérer le contrat
     $numero_contrat = uniqid("CTR-");
     $stmt = $conn->prepare("INSERT INTO contrats (numero_contrat, id_client, date_souscription, date_expiration, type_assurance, montant_prime, reduction, surcharge) VALUES (?, ?, ?, ?, 'cyberattaque', ?, ?, ?)");
     if (!$stmt) {
@@ -250,7 +229,6 @@ try {
     $contrat_id = $stmt->insert_id;
     $stmt->close();
 
-    // Insérer les détails de l'assurance cyberattaque
     $stmt = $conn->prepare("INSERT INTO assurance_cyberattaque (id_contrat, id_garantie, type_client, taille_entreprise, secteur_activite, chiffre_affaires, niveau_securite, historique_attaques, donnees_sensibles) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
     if (!$stmt) {
         throw new Exception("Erreur de préparation de l'insertion assurance cyberattaque: " . $conn->error);
@@ -261,7 +239,6 @@ try {
     }
     $stmt->close();
 
-    // Afficher une alerte de succès et rediriger
     echo <<<HTML
     <!DOCTYPE html>
     <html>
@@ -278,7 +255,7 @@ try {
                 confirmButtonText: "OK"
             }).then((result) => {
                 if (result.isConfirmed) {
-                    window.open("contrat_cyberattaque.php?contrat=$contrat_id&primeBase=$primeBase", "_blank");
+                    window.open("contrat_cyberattaque.php?contrat=$contrat_id", "_blank");
                     window.location.href = "dashboard.php";
                 }
             });
