@@ -17,22 +17,29 @@ class ContratEmpruntAssurance extends ContratPDF {
         $this->InfoLineDouble('Montant de l\'emprunt :', number_format($montant_emprunt, 2, ',', ' ') . ' DZD', 'Durée :', $duree_emprunt . ' ans');
         $this->InfoLineDouble('Type de prêt :', ucfirst($type_pret ?? 'N/A'), 'Taux d\'intérêt :', number_format($taux_interet, 2, ',', ' ') . ' %');
         $this->InfoLineDouble('État de santé :', ucfirst($etat_sante ?? 'N/A'), 'Fumeur :', ucfirst($fumeur ?? 'N/A'));
-        $this->InfoLineDouble('Situation professionnelle :', ucfirst($situation_professionnelle ?? 'N/A'), 'Revenu mensuel :', number_format($revenu_mensuel, 2, ',', ' ') . ' DZD');
+        $this->InfoLineDouble('Profession:', ucfirst($situation_professionnelle ?? 'N/A'), 'Revenu mensuel :', number_format($revenu_mensuel, 2, ',', ' ') . ' DZD');
         $this->Ln(5);
     }
 
     // Afficher les garanties spécifiques
-    public function addGarantiesEmprunt($nom_garantie, $description, $franchise) {
+    public function addGarantiesEmprunt($nom_garantie, $description, $type_pret) {
         $this->SectionTitle('FORMULE ET GARANTIES INCLUSES');
         $this->SetFont('DejaVu', 'B', 11);
         $this->Cell(0, 6, 'Formule : ' . ($nom_garantie ?? 'N/A'), 0, 1);
         $this->Ln(5);
         $this->SetFont('DejaVu', 'B', 10);
-        $franchise = is_numeric($franchise) ? $franchise : 0;
-        $this->Cell(0, 6, 'Franchise : ' . number_format($franchise, 2, ',', ' ') . ' DZD', 0, 1);
+        // Calculer la franchise localement selon le type de prêt
+        $franchise_par_type = [
+            'immobilier' => 90,
+            'consommation' => 60,
+            'auto' => 30,
+        ];
+        $franchise = $franchise_par_type[$type_pret] ?? 90; // Par défaut 90 si type_pret inconnu
+        error_log("Franchise calculée localement pour type_pret=$type_pret: $franchise");
+        $this->Cell(0, 6, 'Franchise : ' . number_format($franchise) . ' jours', 0, 1);
         // Ajout de la phrase après la franchise
         $this->SetFont('DejaVu', '', 10);
-        $this->MultiCell(0, 6, 'La franchise correspond au montant à la charge du souscripteur en cas de sinistre.');
+        $this->MultiCell(0, 6, 'La franchise correspond au nombre de jours qui restent à la charge du souscripteur en cas de sinistre.');
         $this->Ln(5);
         // Afficher les garanties sous forme de liste
         $this->SetFont('DejaVu', 'B', 11);
@@ -70,7 +77,7 @@ try {
     }
     // Récupération des informations du contrat
     $stmt = $conn->prepare("
-        SELECT c.*, e.*, cl.*, g.nom_garantie, g.description, g.prime_base, g.franchise
+        SELECT c.*, e.*, cl.*, g.nom_garantie, g.description, g.prime_base
         FROM contrats c
         JOIN assurance_emprunteur e ON c.id_contrat = e.id_contrat
         JOIN client cl ON c.id_client = cl.id_client
@@ -143,7 +150,7 @@ $coefficients = [
 ];
 
 // Vérifications des données avant génération PDF
-$required_fields = ['numero_contrat', 'date_souscription', 'date_expiration', 'montant_prime', 'nom_client', 'prenom_client', 'telephone', 'email', 'date_naissance', 'montant_emprunt', 'duree_emprunt', 'type_pret', 'taux_interet', 'etat_sante', 'fumeur', 'situation_professionnelle', 'revenu_mensuel', 'prime_base', 'reduction', 'surcharge', 'nom_garantie', 'description', 'franchise'];
+$required_fields = ['numero_contrat', 'date_souscription', 'date_expiration', 'montant_prime', 'nom_client', 'prenom_client', 'telephone', 'email', 'date_naissance', 'montant_emprunt', 'duree_emprunt', 'type_pret', 'taux_interet', 'etat_sante', 'fumeur', 'situation_professionnelle', 'revenu_mensuel', 'prime_base', 'reduction', 'surcharge', 'nom_garantie', 'description'];
 foreach ($required_fields as $field) {
     if (!isset($contrat[$field])) {
         error_log("Champ manquant dans contrat: $field");
@@ -168,9 +175,9 @@ try {
     // Informations du souscripteur
     $pdf->SectionTitle('INFORMATIONS DU SOUSCRIPTEUR');
     $pdf->InfoLine('Nom et prénom :', $contrat['nom_client'] . ' ' . $contrat['prenom_client']);
+    $pdf->InfoLine('Date de naissance :', date("d/m/Y", strtotime($contrat['date_naissance'])));
     $pdf->InfoLine('Téléphone :', $contrat['telephone'] ?? 'N/A');
     $pdf->InfoLine('Email :', $contrat['email'] ?? 'N/A');
-    $pdf->InfoLine('Date de Naissance :', date('d/m/Y', strtotime($contrat['date_naissance'])));
     $pdf->InfoLine('Âge :', $age . ' ans');
     $pdf->Ln(5);
 
@@ -196,7 +203,7 @@ try {
     );
 
     // Garanties
-    $pdf->addGarantiesEmprunt($contrat['nom_garantie'], $contrat['description'], $contrat['franchise']);
+    $pdf->addGarantiesEmprunt($contrat['nom_garantie'], $contrat['description'], $contrat['type_pret']);
 
     // Signatures
     $pdf->AddSignatureBlock();

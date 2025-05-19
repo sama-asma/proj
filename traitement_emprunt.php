@@ -42,7 +42,6 @@ $id_garantie = intval($_POST['id_garantie'] ?? 0);
 $date_souscription = trim($_POST['date_souscription'] ?? '') ?: null;
 $date_expiration = trim($_POST['date_expiration'] ?? '') ?: null;
 $prime_calculee = floatval($_POST['prime_calculee'] ?? 0);
-$franchise = floatval($_POST['franchise'] ?? 0);
 
 // Validation des données
 $errors = [];
@@ -76,7 +75,6 @@ if (empty($id_garantie)) $errors[] = "L'identifiant de garantie est requis.";
 if (empty($date_souscription) || !strtotime($date_souscription)) $errors[] = "Une date de souscription valide est requise.";
 if (empty($date_expiration) || !strtotime($date_expiration)) $errors[] = "Une date d'expiration valide est requise.";
 if (empty($prime_calculee)) $errors[] = "La prime calculée est requise.";
-if (empty($franchise)) $errors[] = "La franchise est requise.";
 
 if (!empty($errors)) {
     error_log("Erreurs de validation: " . implode(", ", $errors));
@@ -108,9 +106,9 @@ try {
     if (!$stmt) {
         throw new Exception("Erreur préparation requête insertion client: " . $conn->error);
     }
-    error_log("Requête préparée avec succès");
+    error_log("Requête client préparée avec succès");
     $stmt->bind_param("sssss", $nom_client, $prenom_client, $telephone, $email, $date_naissance);
-    error_log("Paramètres liés avec succès");
+    error_log("Paramètres client liés avec succès");
     if (!$stmt->execute()) {
         throw new Exception("Erreur insertion client: " . $stmt->error);
     }
@@ -124,7 +122,7 @@ try {
     if (!$stmt) {
         throw new Exception("Erreur préparation requête insertion contrat: " . $conn->error);
     }
-    $type_assurance = 'emprunteur'; // Correction : 'emprunt' -> 'emprunteur'
+    $type_assurance = 'emprunteur';
     $stmt->bind_param("sisssddd", $numero_contrat, $client_id, $date_souscription, $date_expiration, $type_assurance, $prime_calculee, $reduction, $surcharge);
     if (!$stmt->execute()) {
         throw new Exception("Erreur insertion contrat: " . $stmt->error);
@@ -133,12 +131,30 @@ try {
     error_log("Contrat inséré avec succès, id_contrat: $contrat_id, type_assurance: $type_assurance");
     $stmt->close();
 
-    // Insérer dans assurance_emprunteur
-    $stmt = $conn->prepare("INSERT INTO assurance_emprunteur (id_contrat, id_garantie, etat_sante, situation_professionnelle, montant_emprunt, duree_emprunt, taux_interet, revenu_mensuel, type_pret, fumeur, date_naissance) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    // Insérer dans assurance_emprunteur sans franchise
+    $stmt = $conn->prepare("
+        INSERT INTO assurance_emprunteur (
+            id_contrat, id_garantie, etat_sante, situation_professionnelle, 
+            montant_emprunt, duree_emprunt, taux_interet, revenu_mensuel, 
+            type_pret, fumeur
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    ");
     if (!$stmt) {
         throw new Exception("Erreur préparation requête insertion assurance_emprunteur: " . $conn->error);
     }
-    $stmt->bind_param("iissiddssss", $contrat_id, $id_garantie, $etat_sante, $situation_professionnelle, $montant_emprunt, $duree_emprunt, $taux_interet, $revenu_mensuel, $type_pret, $fumeur, $date_naissance);
+    $stmt->bind_param(
+        "iissiddsss",
+        $contrat_id,
+        $id_garantie,
+        $etat_sante,
+        $situation_professionnelle,
+        $montant_emprunt,
+        $duree_emprunt,
+        $taux_interet,
+        $revenu_mensuel,
+        $type_pret,
+        $fumeur
+    );
     if (!$stmt->execute()) {
         throw new Exception("Erreur insertion assurance_emprunteur: " . $stmt->error);
     }

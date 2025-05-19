@@ -2,10 +2,17 @@
 session_start();
 require 'db.php';
 
+// Vérifier la session
 if (!isset($_SESSION['user_id'])) {
+    header('Content-Type: application/json');
     echo json_encode(['success' => false, 'message' => 'Session expirée']);
     exit;
 }
+
+// Désactiver l'affichage des erreurs et activer la journalisation
+ini_set('display_errors', 0);
+ini_set('display_startup_errors', 0);
+error_reporting(E_ALL);
 
 // Débogage : Afficher les données soumises via $_POST
 error_log("Données POST soumises : " . json_encode($_POST));
@@ -13,9 +20,14 @@ error_log("Données POST soumises : " . json_encode($_POST));
 // Calculer l'âge de l'emprunteur
 $date_naissance = $_POST['date_naissance'] ?? null;
 if ($date_naissance) {
-    $date_naissance_dt = new DateTime($date_naissance);
-    $aujourdhui = new DateTime();
-    $age = $aujourdhui->diff($date_naissance_dt)->y;
+    try {
+        $date_naissance_dt = new DateTime($date_naissance);
+        $aujourdhui = new DateTime();
+        $age = $aujourdhui->diff($date_naissance_dt)->y;
+    } catch (Exception $e) {
+        error_log("Erreur lors du calcul de l'âge : " . $e->getMessage());
+        $age = 0;
+    }
 } else {
     $age = 0;
 }
@@ -76,28 +88,49 @@ if ($data['reduction'] < 0 || $data['reduction'] > 100) {
 }
 
 if (!empty($errors)) {
+    header('Content-Type: application/json');
     echo json_encode(['success' => false, 'message' => implode(', ', $errors)]);
     exit;
 }
 
-// Récupérer prime_base et franchise depuis la table garanties
-$stmt = $conn->prepare("SELECT prime_base, franchise FROM garanties WHERE id_garantie = ?");
+// Vérifier la connexion à la base de données
+if (!$conn) {
+    error_log("Connexion à la base de données échouée : " . mysqli_connect_error());
+    header('Content-Type: application/json');
+    echo json_encode(['success' => false, 'message' => 'Erreur de connexion à la base de données']);
+    exit;
+}
+
+// Récupérer prime_base depuis la table garanties
+$stmt = $conn->prepare("SELECT prime_base FROM garanties WHERE id_garantie = ?");
+if (!$stmt) {
+    error_log("Erreur préparation requête : " . $conn->error);
+    header('Content-Type: application/json');
+    echo json_encode(['success' => false, 'message' => 'Erreur de préparation de la requête']);
+    exit;
+}
 $stmt->bind_param("i", $data['id_garantie']);
-$stmt->execute();
+if (!$stmt->execute()) {
+    error_log("Erreur exécution requête : " . $stmt->error);
+    header('Content-Type: application/json');
+    echo json_encode(['success' => false, 'message' => 'Erreur lors de l\'exécution de la requête']);
+    exit;
+}
 $result = $stmt->get_result();
 
 if ($result->num_rows > 0) {
     $row = $result->fetch_assoc();
     $primeBase = floatval($row['prime_base']);
-    $franchise = floatval($row['franchise']);
 } else {
+    error_log("Garantie non trouvée pour id_garantie : " . $data['id_garantie']);
+    header('Content-Type: application/json');
     echo json_encode(['success' => false, 'message' => 'Garantie non trouvée']);
     exit;
 }
 $stmt->close();
 
 // Débogage : Afficher les valeurs pour vérification
-error_log("primeBase: $primeBase, franchise: $franchise");
+error_log("primeBase: $primeBase");
 
 // Facteurs de calcul
 $coef_age = ($data['age'] < 30) ? 0.9 : (($data['age'] > 60) ? 1.5 : 1.2);
@@ -106,7 +139,7 @@ $coef_etat_sante = [
     'bon' => 0.9,
     'moyen' => 1.2,
     'mauvais' => 1.5,
-][$data['etat_sante']] ?? 1.0;
+][$data['etat_sante']] ?? 1.0; // Correction de "Gabriella1.0" en 1.0
 $coef_situation_pro = [
     'cdi' => 0.9,
     'cdd' => 1.2,
@@ -128,30 +161,32 @@ $coef_fumeur = [
     'non' => 1.0,
 ][$data['fumeur']] ?? 1.0;
 
-// Ajustement de la franchise selon le type de prêt (si non défini dans la table garanties)
+// Ajustement de la franchise selon le type de prêt
 $franchise_par_type = [
     'immobilier' => 90,
     'consommation' => 60,
     'auto' => 30,
 ];
-$franchise = $franchise ?: ($franchise_par_type[$data['type_pret']] ?? 90);
+$franchise = $franchise_par_type[$data['type_pret']] ?? 90;
+error_log("Franchise calculée pour type_pret={$data['type_pret']}: $franchise");
 
 // Calcul de la prime nette (prime totale sur toute la durée)
 $primeNet = ($primeBase * $data['montant_emprunt'] / 100) * $coef_age * $coef_etat_sante * $coef_situation_pro * $coef_type_pret
             * $coef_montant_pret * $coef_duree_pret * $coef_taux_interet * $coef_revenu_mensuel * $coef_fumeur;
 
-// Calcul de la prime annuelle (prime nette divisée par la durée, puis ajustée par réduction/surcharge)
-$primeAnnuelle = $primeNet* (1 - $data['reduction'] / 100) * (1 + $data['surcharge'] / 100);
+// Calcul de la prime annuelle
+$primeAnnuelle = $primeNet * (1 - $data['reduction'] / 100) * (1 + $data['surcharge'] / 100);
 
 // Débogage : Afficher les résultats intermédiaires
-error_log("primeNet: $primeNet, primeAnnuelle: $primeAnnuelle");
+error_log("primeNet: $primeNet, primeAnnuelle: $primeAnnuelle, franchise: $franchise");
 
 // Réponse JSON
+header('Content-Type: application/json');
 echo json_encode([
     'success' => true,
     'primeNet' => round($primeNet, 2), // Prime totale
     'prime' => round($primeAnnuelle, 2), // Prime annuelle
-    'franchise' => round($franchise, 2),
+    'franchise' => round($franchise, 2), // Franchise en pourcentage
     'details' => "Calcul basé sur âge, santé, situation pro, type prêt, montant, durée, taux, revenu, fumeur (en DZD)"
 ]);
 ?>

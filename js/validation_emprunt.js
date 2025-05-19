@@ -296,7 +296,6 @@ document.addEventListener('DOMContentLoaded', function() {
             afficherResultatPrime(data.prime, data.primeNet, data.franchise);
             document.getElementById('souscrireBtn').style.display = 'inline-block';
             document.getElementById('formEmprunt').dataset.prime = data.prime;
-            document.getElementById('formEmprunt').dataset.franchise = data.franchise;
         } catch (error) {
             console.error("Erreur:", error);
             Swal.fire({
@@ -340,7 +339,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <p>Prime avec Surcharge: <strong>${primeAvecSurcharge.toLocaleString('fr-FR')} DZD</strong></p>
                 <p>Prime avec Réduction: <strong>${primeAvecReduction.toLocaleString('fr-FR')} DZD</strong></p>
                 <p>Prime annuelle: <strong>${prime.toLocaleString('fr-FR')} DZD</strong></p>
-                <p>Franchise: <strong>${franchise.toLocaleString('fr-FR')} %</strong></p>
+                <p>Franchise: <strong>${franchise.toLocaleString('fr-FR')} jours</strong></p>
                 <p>Date d'effet: ${document.getElementById('date_souscription').value}</p>
                 <p>Date d'expiration: ${document.getElementById('date_expiration').value}</p>
             </div>
@@ -371,7 +370,6 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         document.getElementById('prime').value = this.dataset.prime;
-        document.getElementById('franchise').value = this.dataset.franchise;
         const submitBtn = document.getElementById('souscrireBtn');
         submitBtn.disabled = true;
         submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Souscription en cours...';
