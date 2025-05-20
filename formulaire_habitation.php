@@ -2,7 +2,7 @@
 session_start();
 // Vérifier si l'utilisateur est connecté
 if (!isset($_SESSION['user_id'])) {
-    header('Location: login.php');
+    header('Location: index.php');
     exit();
 }
 ?>
@@ -165,10 +165,10 @@ if (!isset($_SESSION['user_id'])) {
                         <label for="etat_toiture" class="required">État de la toiture</label>
                         <select id="etat_toiture" name="etat_toiture" required>
                             <option value="">-- Sélectionnez --</option>
-                            <option value="neuf">Neuf</option>
-                            <option value="bon">Bon</option>
-                            <option value="moyen">Moyen</option>
-                            <option value="mauvais">Mauvais</option>
+                            <option value="neuf">Neuf (1- 4 ans)</option>
+                            <option value="bon">Bon (5- 10 ans)</option>
+                            <option value="moyen">Moyen (11 - 20ans)</option>
+                            <option value="mauvais">Mauvais (> 20ans)</option>
                         </select>
                     </div>
                     <div class="form-group">

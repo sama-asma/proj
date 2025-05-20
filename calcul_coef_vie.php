@@ -36,8 +36,7 @@ function calculerCoeff($data) {
     // Fumeur
     $coef_fumeur = match($data['fumeur']) {
         'non' => 1.0,
-        'occasionnel' => 1.2,
-        'regulier' => 1.5
+        'oui' => 1.2
     };
 
     // Sexe

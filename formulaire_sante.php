@@ -2,7 +2,7 @@
 session_start();
 // Vérifier si l'utilisateur est connecté
 if (!isset($_SESSION['user_id'])) {
-    header('Location: login.php');
+    header('Location: index.php');
     exit();
 }
 ?>
@@ -134,6 +134,13 @@ if (!isset($_SESSION['user_id'])) {
                                 <option value="femme">Femme</option>
                             </select>
                     </div>
+                    <div class="form-group">
+                        <label for="fumeur" class="required">Fumeur</label>
+                        <select id="fumeur" name="fumeur">
+                            <option value="non">Non</option>
+                            <option value="oui">Oui</option>
+                        </select>
+                    </div>
                 </div>
                 <div class="form-group">
                 <label>Antécédents médicaux</label>
@@ -170,20 +177,6 @@ if (!isset($_SESSION['user_id'])) {
                         <input type="checkbox" id="avc" name="antecedents[]" value="avc">
                         <label for="avc">AVC ou antécédent cérébral</label>
                     </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="fumeur">Fumeur</label>
-                        <select id="fumeur" name="fumeur">
-                            <option value="non">Non</option>
-                            <option value="occasionnel">Occasionnel</option>
-                            <option value="regulier">Régulier</option>
-                        </select>
-                    </div>
-                    <!-- <div class="form-group">
-                        <label for="nb_personnes">Nombre de personnes à couvrir</label>
-                        <input type="number" id="nb_personnes" name="nb_personnes" min="1" value="1">
-                    </div> -->
                 </div>
             </div>
 

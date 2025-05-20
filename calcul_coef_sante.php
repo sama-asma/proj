@@ -20,8 +20,7 @@ function getFacteursSante() {
         ],
         'fumeur' => [
             'non' => 1.0,
-            'occasionnel' => 1.1,
-            'regulier' => 1.4
+            'oui' => 1.2
         ]
     ];
 }

@@ -1,7 +1,7 @@
 <?php 
 session_start();
 if (!isset($_SESSION['user_id'])) {
-    header('Location: login.php');
+    header('Location: index.php');
     exit();
 }
 ?>
@@ -112,11 +112,10 @@ if (!isset($_SESSION['user_id'])) {
                 </div>
                 <div class="form-row">
                     <div class="form-group">
-                       <label for="fumeur">Fumeur</label>
+                       <label for="fumeur" class="required">Fumeur</label>
                         <select id="fumeur" name="fumeur">
                             <option value="non">Non</option>
-                            <option value="occasionnel">Occasionnel</option>
-                            <option value="regulier">Régulier</option>
+                            <option value="oui">Oui</option>
                         </select>
                     </div>
                     <div class="form-group">
