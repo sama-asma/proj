@@ -110,7 +110,7 @@ $coef_niveau_securite = match ($contrat['niveau_securite']) {
     default => 1.0,
 };
 
-$coef_historique_attaques = match ($contrat['historique_attaques']) {
+$coef_historique_attaques = match ($contrat['historique_cyberattaques']) {
     'aucun' => 0.9,
     'mineur' => 1.2,
     'majeur' => 1.5,
@@ -148,7 +148,7 @@ $pdf->addCyberDetails(
     $contrat['secteur_activite'],
     $contrat['chiffre_affaires'],
     $contrat['niveau_securite'],
-    $contrat['historique_attaques'],
+    $contrat['historique_cyberattaques'],
     $contrat['donnees_sensibles']
 );
 

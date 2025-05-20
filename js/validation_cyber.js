@@ -212,7 +212,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (isNaN(prime) || prime <= 0) {
                 throw new Error('Les valeurs de prime doivent être des nombres positifs valides');
             }
-            afficherResultatPrime(prime, data.primeNet, data.franchise);
+            afficherResultatPrime(prime, data.primeNet);
             document.getElementById('souscrireBtn').style.display = 'inline-block';
             document.getElementById('formCyberAttaque').dataset.prime = prime;
         } catch (error) {
@@ -230,7 +230,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Fonction pour afficher le résultat de la prime
-    function afficherResultatPrime(prime, primeNet, franchise) {
+    function afficherResultatPrime(prime, primeNet) {
         const resultatDiv = document.getElementById('resultatCalcul');
         const detailDiv = document.getElementById('detailPrime');
     
@@ -246,7 +246,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 <p>Prime avec Surcharge: <strong>${primeAvecSurcharge.toLocaleString('fr-FR')} DZD</strong></p>
                 <p>Prime avec Réduction: <strong>${primeAvecReduction.toLocaleString('fr-FR')} DZD</strong></p>
                 <p>Prime annuelle: <strong>${prime.toLocaleString('fr-FR')} DZD</strong></p>
-                <p>Franchise: <strong>${franchise.toLocaleString('fr-FR')} %</strong></p>
                 <p>Date d'effet: ${document.getElementById('date_souscription').value}</p>
                 <p>Date d'expiration: ${document.getElementById('date_expiration').value}</p>
             </div>
@@ -255,7 +254,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Empêcher la soumission par Entrée quand le formulaire est invalide
-    document.getElementById('form CyberAttaque').addEventListener('keydown', function(e) {
+    document.getElementById('formCyberAttaque').addEventListener('keydown', function(e) {
         if (e.key === 'Enter') {
             const submitBtn = document.querySelector('#souscrireBtn');
             if (submitBtn.disabled || !this.dataset.prime) {
@@ -314,8 +313,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     clientDiv.className = 'client-item';
                     clientDiv.innerHTML = `
                         <div class="client-info">
-                            <strong>${client.nom} ${client.prenom || ''}</strong><br>
-                            Type: ${client.type_client === 'entreprise' ? 'Entreprise' : 'Particulier'}<br>
+                            <strong>${client.nom} ${client.prenom}</strong><br>
                             Tél: ${client.telephone}<br>
                             Email: ${client.email}
                         </div>
@@ -325,7 +323,6 @@ document.addEventListener('DOMContentLoaded', function() {
                                 data-prenom="${client.prenom || ''}"
                                 data-telephone="${client.telephone}"
                                 data-email="${client.email}"
-                                data-type_client="${client.type_client}"
                                 data-date_naissance="${client.date_naissance || ''}">
                             Sélectionner
                         </button>

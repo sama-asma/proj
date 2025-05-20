@@ -94,7 +94,7 @@ if (!in_array($donnees_sensibles, ['aucune', 'personnelles', 'financieres', 'con
     $errors[] = "Type de données sensibles invalide.";
 }
 if ($prime <= 0) {
-    $errors[] = "La prime doit être un nombre positif supérieur à zéro.";
+    $errors[] = "La prime doit être un nombre positif supérieur à zéro.". $prime;
 }
 
 if (!empty($errors)) {
@@ -229,11 +229,11 @@ try {
     $contrat_id = $stmt->insert_id;
     $stmt->close();
 
-    $stmt = $conn->prepare("INSERT INTO assurance_cyberattaque (id_contrat, id_garantie, type_client, taille_entreprise, secteur_activite, chiffre_affaires, niveau_securite, historique_attaques, donnees_sensibles) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt = $conn->prepare("INSERT INTO assurance_cyberattaque (id_contrat, id_garantie, taille_entreprise, historique_cyberattaques, secteur_activite, chiffre_affaires, niveau_securite, donnees_sensibles, type_client) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
     if (!$stmt) {
         throw new Exception("Erreur de préparation de l'insertion assurance cyberattaque: " . $conn->error);
     }
-    $stmt->bind_param("iisssdsss", $contrat_id, $id_garantie, $type_client, $taille_entreprise, $secteur_activite, $chiffre_affaires, $niveau_securite, $historique_attaques, $donnees_sensibles);
+    $stmt->bind_param("iisssdsss", $contrat_id, $id_garantie, $taille_entreprise, $historique_attaques, $secteur_activite, $chiffre_affaires, $niveau_securite, $donnees_sensibles, $type_client);
     if (!$stmt->execute()) {
         throw new Exception("Erreur lors de l'insertion des détails de l'assurance cyberattaque: " . $conn->error);
     }
