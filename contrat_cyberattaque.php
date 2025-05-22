@@ -8,16 +8,12 @@ class ContratCyberAssurance extends ContratPDF {
     }
 
     // Afficher les garanties spécifiques cyber
-    public function addGarantiesCyber($nom_garantie, $description, $franchise) {
+    public function addGarantiesCyber($nom_garantie, $description) {
         $this->SectionTitle('FORMULE ET GARANTIES');
         $this->SetFont('DejaVu', 'B', 11);
         $this->Cell(0, 6, 'Formule : ' . $nom_garantie, 0, 1);
         $this->Ln(5);
         $this->SetFont('DejaVu', 'B', 10);
-        $this->Cell(0, 6, 'Franchise : ' . number_format($franchise, 2, ',', ' ') . ' DZD', 0, 1);
-        $this->SetFont('DejaVu', '', 10);
-        $this->MultiCell(0, 6, 'La franchise correspond au montant à la charge du souscripteur en cas de sinistre.');
-        $this->Ln(5);
         $this->SetFont('DejaVu', 'B', 11);
         $this->Cell(0, 6, 'Garanties incluses :', 0, 1);
         $this->SetFont('DejaVu', '', 10);
@@ -34,14 +30,11 @@ class ContratCyberAssurance extends ContratPDF {
     }
 
     // Afficher les détails spécifiques du contrat cyber
-    public function addCyberDetails($type_client, $taille_entreprise, $secteur_activite, $chiffre_affaires, $niveau_securite, $historique_attaques, $donnees_sensibles) {
+    public function addCyberDetails($taille_entreprise, $secteur_activite, $chiffre_affaires, $niveau_securite, $historique_attaques, $donnees_sensibles) {
         $this->SectionTitle('DÉTAILS DE L\'ASSURANCE CYBERATTAQUE');
-        $this->InfoLine('Type de client :', ucfirst($type_client));
-        if ($type_client === 'entreprise') {
-            $this->InfoLine('Taille de l\'entreprise :', ucfirst($taille_entreprise));
-            $this->InfoLine('Secteur d\'activité :', $secteur_activite);
-            $this->InfoLine('Chiffre d\'affaires :', number_format($chiffre_affaires, 2, ',', ' ') . ' DZD');
-        }
+        $this->InfoLine('Taille de l\'entreprise :', ucfirst($taille_entreprise));
+        $this->InfoLine('Secteur d\'activité :', $secteur_activite);
+        $this->InfoLine('Chiffre d\'affaires :', number_format($chiffre_affaires, 2, ',', ' ') . ' DZD');
         $this->InfoLine('Niveau de sécurité :', ucfirst($niveau_securite));
         $this->InfoLine('Historique des cyberattaques :', ucfirst($historique_attaques));
         $this->InfoLine('Données sensibles :', ucfirst($donnees_sensibles));
@@ -59,7 +52,7 @@ require 'db.php';
 try {
     mysqli_set_charset($conn, "utf8");
     $stmt = $conn->prepare("
-        SELECT c.*, ac.*, cl.*, g.nom_garantie, g.description, g.franchise
+        SELECT c.*, ac.*, cl.*, g.nom_garantie, g.description
         FROM contrats c
         JOIN assurance_cyberattaque ac ON c.id_contrat = ac.id_contrat
         JOIN client cl ON c.id_client = cl.id_client
@@ -78,22 +71,19 @@ try {
 }
 
 // Définir la prime de base localement
-$primeBase = 50000; // Default for particulier
-if ($contrat['type_client'] === 'entreprise') {
     $primeBase = match ($contrat['taille_entreprise']) {
         'petite' => 50000,
         'moyenne' => 150000,
         'grande' => 300000,
         default => 50000,
     };
-}
 
-$coef_taille_entreprise = ($contrat['type_client'] === 'entreprise') ? match ($contrat['taille_entreprise']) {
+$coef_taille_entreprise = match ($contrat['taille_entreprise']) {
     'petite' => 0.8,
     'moyenne' => 1.0,
     'grande' => 1.3,
     default => 1.0,
-} : 1.0;
+} ;
 
 $coef_donnees_sensibles = match ($contrat['donnees_sensibles']) {
     'aucune' => 0.9,
@@ -143,7 +133,6 @@ $pdf->InfoLine('Date de Naissance :', date('d/m/Y', strtotime($contrat['date_nai
 $pdf->Ln(5);
 
 $pdf->addCyberDetails(
-    $contrat['type_client'],
     $contrat['taille_entreprise'],
     $contrat['secteur_activite'],
     $contrat['chiffre_affaires'],
@@ -160,7 +149,7 @@ $pdf->addPrimeDetails(
     $coefficients
 );
 
-$pdf->addGarantiesCyber($contrat['nom_garantie'], $contrat['description'], $contrat['franchise']);
+$pdf->addGarantiesCyber($contrat['nom_garantie'], $contrat['description']);
 
 $pdf->AddSignatureBlock();
 $pdf->SetTitle('Contrat d\'assurance cyberattaque');

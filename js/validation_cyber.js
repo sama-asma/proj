@@ -86,24 +86,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Gestion de l'affichage conditionnel de la section entreprise
-    const typeClientInput = document.getElementById('type_client');
-    const entrepriseSection = document.getElementById('entrepriseSection');
-    const entrepriseInputs = entrepriseSection.querySelectorAll('input, select');
-    typeClientInput.addEventListener('change', function() {
-        if (this.value === 'entreprise') {
-            entrepriseSection.style.display = 'block';
-            entrepriseInputs.forEach(input => {
-                input.setAttribute('required', 'true');
-            });
-        } else {
-            entrepriseSection.style.display = 'none';
-            entrepriseInputs.forEach(input => {
-                input.removeAttribute('required');
-                clearError(input);
-            });
-        }
-    });
 
     // Validation pour le nom ou raison sociale
     const nomClientInput = document.getElementById('nom_client');
@@ -120,7 +102,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Validation pour le secteur d'activité (entreprise)
     const secteurActiviteInput = document.getElementById('secteur_activite');
     secteurActiviteInput.addEventListener('blur', function() {
-        if (typeClientInput.value === 'entreprise' && !this.value.trim()) {
+        if (!this.value.trim()) {
             showError(this, 'Ce champ est obligatoire pour les entreprises');
         } else if (this.value.trim() && this.value.length < 2) {
             showError(this, 'Le secteur d\'activité doit contenir au moins 2 caractères');
@@ -314,21 +296,28 @@ document.addEventListener('DOMContentLoaded', function() {
                     clientDiv.innerHTML = `
                         <div class="client-info">
                             <strong>${client.nom} ${client.prenom}</strong><br>
+                            Né(e) le: ${formatDate(client.date_naissance)}<br>
                             Tél: ${client.telephone}<br>
                             Email: ${client.email}
                         </div>
                         <button class="select-btn" 
                                 type="button"
                                 data-nom="${client.nom}"
-                                data-prenom="${client.prenom || ''}"
+                                data-prenom="${client.prenom}"
                                 data-telephone="${client.telephone}"
                                 data-email="${client.email}"
-                                data-date_naissance="${client.date_naissance || ''}">
+                                data-date_naissance="${client.date_naissance}">
                             Sélectionner
                         </button>
                     `;
                     listeClients.appendChild(clientDiv);
                 });
+            }
+             // Fonction helper pour formater la date
+             function formatDate(dateString) {
+                if (!dateString) return 'Non renseignée';
+                const options = { year: 'numeric', month: 'long', day: 'numeric' };
+                return new Date(dateString).toLocaleDateString('fr-FR', options);
             }
             
             resultatsDiv.style.display = 'block';
@@ -347,12 +336,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 document.getElementById('prenom_client').value = btn.dataset.prenom;
                 document.getElementById('telephone').value = btn.dataset.telephone;
                 document.getElementById('email').value = btn.dataset.email;
-                document.getElementById('type_client').value = btn.dataset.type_client;
                 document.getElementById('date_naissance').value = btn.dataset.date_naissance;
-                typeClientInput.dispatchEvent(new Event('change')); // Déclencher l'affichage conditionnel
                 resultatsDiv.style.display = 'none';
                 inputRecherche.value = '';
-                document.getElementById('type_client').focus();
             }
         });
         

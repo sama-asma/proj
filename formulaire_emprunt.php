@@ -153,7 +153,6 @@ if (!isset($_SESSION['user_id'])) {
                             <option value="cdd">CDD</option>
                             <option value="independant">Indépendant</option>
                             <option value="fonctionnaire">Fonctionnaire</option>
-                            <option value="sans_emploi">Sans emploi</option>
                         </select>
                     </div>
                     <div class="form-group">

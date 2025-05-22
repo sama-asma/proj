@@ -126,7 +126,6 @@ $coef_situation_professionnelle = [
     'fonctionnaire' => 0.85,
     'cdd' => 1.1,
     'independant' => 1.15,
-    'sans_emploi' => 1.3,
 ][$contrat['situation_professionnelle']] ?? 1.0;
 $coef_type_pret = [
     'immobilier' => 1.0,
@@ -195,7 +194,7 @@ try {
 
     // Détails de la prime
     $pdf->addPrimeDetails(
-        $contrat['prime_base'],
+        $contrat['prime_base']* $contrat['montant_emprunt'] /100,
         $contrat['reduction'],
         $contrat['surcharge'],
         $contrat['montant_prime'],

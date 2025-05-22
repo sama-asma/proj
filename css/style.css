@@ -252,7 +252,7 @@ body {
 }
 .recent-contracts tbody .btn-view, .all-contracts tbody .btn-view {
   display: inline-block;
-  padding: 5px 10px;
+  padding: 5px 5px;
   background: #e74c3c;
   color: white;
   border-radius: 4px;

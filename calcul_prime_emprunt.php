@@ -56,14 +56,14 @@ if ($data['age'] < 18 || $data['age'] > 80) {
 if (!in_array($data['etat_sante'], ['excellent', 'bon', 'moyen', 'mauvais'])) {
     $errors[] = "État de santé invalide";
 }
-if (!in_array($data['situation_professionnelle'], ['cdi', 'cdd', 'independant', 'fonctionnaire', 'sans_emploi'])) {
+if (!in_array($data['situation_professionnelle'], ['cdi', 'cdd', 'independant', 'fonctionnaire'])) {
     $errors[] = "Situation professionnelle invalide";
 }
 if (!in_array($data['type_pret'], ['immobilier', 'consommation', 'auto'])) {
     $errors[] = "Type de prêt invalide";
 }
-if ($data['montant_emprunt'] < 1000 || $data['montant_emprunt'] > 100000000) {
-    $errors[] = "Le montant du prêt doit être entre 1 000 et 100 000 000 DZD";
+if ($data['montant_emprunt'] < 500000 || $data['montant_emprunt'] > 100000000) {
+    $errors[] = "Le montant du prêt doit être entre  500000 et 100 000 000 DZD";
 }
 if ($data['duree_emprunt'] < 1 || $data['duree_emprunt'] > 30) {
     $errors[] = "La durée du prêt doit être entre 1 et 30 ans";
@@ -80,11 +80,11 @@ if (!in_array($data['fumeur'], ['oui', 'non'])) {
 if (!$date_naissance) {
     $errors[] = "Date de naissance requise";
 }
-if ($data['surcharge'] < 0 || $data['surcharge'] > 100) {
-    $errors[] = "La surcharge doit être entre 0 et 100 %";
+if ($data['surcharge'] < 0 || $data['surcharge'] > 50) {
+    $errors[] = "La surcharge doit être entre 0 et 50 %";
 }
-if ($data['reduction'] < 0 || $data['reduction'] > 100) {
-    $errors[] = "La réduction doit être entre 0 et 100 %";
+if ($data['reduction'] < 0 || $data['reduction'] > 50) {
+    $errors[] = "La réduction doit être entre 0 et 50 %";
 }
 
 if (!empty($errors)) {
@@ -145,7 +145,6 @@ $coef_situation_pro = [
     'cdd' => 1.2,
     'independant' => 1.3,
     'fonctionnaire' => 0.85,
-    'sans_emploi' => 1.5,
 ][$data['situation_professionnelle']] ?? 1.0;
 $coef_type_pret = [
     'immobilier' => 1.0,

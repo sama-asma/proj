@@ -67,7 +67,7 @@ if (empty($type_pret) || !in_array($type_pret, ['immobilier', 'consommation', 'a
 if (empty($taux_interet) || $taux_interet < 0 || $taux_interet > 20) $errors[] = "Le taux d'intérêt doit être entre 0 et 20 %.";
 if (empty($etat_sante) || !in_array($etat_sante, ['excellent', 'bon', 'moyen', 'mauvais'])) $errors[] = "État de santé invalide.";
 if (empty($fumeur) || !in_array($fumeur, ['oui', 'non'])) $errors[] = "Statut fumeur invalide.";
-if (empty($situation_professionnelle) || !in_array($situation_professionnelle, ['cdi', 'cdd', 'independant', 'fonctionnaire', 'sans_emploi'])) $errors[] = "Situation professionnelle invalide.";
+if (empty($situation_professionnelle) || !in_array($situation_professionnelle, ['cdi', 'cdd', 'independant', 'fonctionnaire'])) $errors[] = "Situation professionnelle invalide.";
 if (empty($revenu_mensuel) || $revenu_mensuel < 50000 || $revenu_mensuel > 5000000) $errors[] = "Le revenu mensuel doit être entre 50 000 et 5 000 000 DZD.";
 if ($surcharge < 0 || $surcharge > 100) $errors[] = "La surcharge doit être entre 0 et 100 %.";
 if ($reduction < 0 || $reduction > 100) $errors[] = "La réduction doit être entre 0 et 100 %.";
@@ -101,21 +101,24 @@ $date_naissance = $date_naissance_dt->format('Y-m-d');
 error_log("Données formatées pour insertion: nom_client=$nom_client, prenom_client=$prenom_client, telephone=$telephone, email=$email, date_naissance=$date_naissance");
 
 try {
-    // Insérer le client
-    $stmt = $conn->prepare("INSERT INTO client (nom_client, prenom_client, telephone, email, date_naissance) VALUES (?, ?, ?, ?, ?)");
-    if (!$stmt) {
-        throw new Exception("Erreur préparation requête insertion client: " . $conn->error);
-    }
-    error_log("Requête client préparée avec succès");
-    $stmt->bind_param("sssss", $nom_client, $prenom_client, $telephone, $email, $date_naissance);
-    error_log("Paramètres client liés avec succès");
-    if (!$stmt->execute()) {
-        throw new Exception("Erreur insertion client: " . $stmt->error);
-    }
-    $client_id = $stmt->insert_id;
-    error_log("Client inséré avec succès, id_client: $client_id");
-    $stmt->close();
+    // Vérifier si le client existe déjà
+    $stmt = $conn->prepare("SELECT id_client FROM client WHERE email = ? AND telephone = ? 
+    AND nom_client = ? AND prenom_client = ? AND date_naissance = ?");
+    $stmt->bind_param("sssss", $email, $telephone, $nom_client, $prenom_client, $date_naissance);
+    $stmt->execute();
+    $result = $stmt->get_result();
 
+    if ($result->num_rows > 0) {
+        $client = $result->fetch_assoc();
+        $client_id = $client['id_client'];
+    } else {
+        // Créer un nouveau client
+        $stmt = $conn->prepare("INSERT INTO client (nom_client, prenom_client, telephone, email, date_naissance) VALUES (?, ?, ?, ?, ?)");
+        $stmt->bind_param("sssss", $nom_client, $prenom_client, $telephone, $email, $date_naissance);
+        $stmt->execute();
+        $client_id = $stmt->insert_id;
+    }
+    $stmt->close();
     // Insérer le contrat avec type_assurance corrigé
     $numero_contrat = 'CTR-' . uniqid();
     $stmt = $conn->prepare("INSERT INTO contrats (numero_contrat, id_client, date_souscription, date_expiration, type_assurance, montant_prime, reduction, surcharge) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");

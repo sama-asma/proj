@@ -64,7 +64,7 @@ if (!isset($_SESSION['user_id'])) {
                         <input type="text" id="nom_client" name="nom_client" required>
                     </div>
                     <div class="form-group">
-                        <label for="prenom_client">Prénom (si particulier)</label>
+                        <label for="prenom_client" class="required">Prénom</label>
                         <input type="text" id="prenom_client" name="prenom_client">
                     </div>
                 </div>
@@ -82,14 +82,6 @@ if (!isset($_SESSION['user_id'])) {
                     <div class="form-group">
                         <label for="date_naissance" class="required">Date de naissance</label>
                         <input type="date" id="date_naissance" name="date_naissance" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="type_client" class="required">Type de client</label>
-                        <select id="type_client" name="type_client" required>
-                            <option value="">-- Sélectionnez --</option>
-                            <option value="particulier">Particulier</option>
-                            <option value="entreprise">Entreprise</option>
-                        </select>
                     </div>
                 </div>
             </div>

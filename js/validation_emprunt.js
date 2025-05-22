@@ -95,8 +95,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const montant = parseFloat(this.value);
         if (!montant) {
             showError(this, 'Ce champ est obligatoire');
-        } else if (montant < 1000 || montant > 100000000) {
-            showError(this, 'Le montant doit être entre 1 000 et 100 000 000 DZD');
+        } else if (montant < 50000 || montant > 100000000) {
+            showError(this, 'Le montant doit être entre 50 000 et 100 000 000 DZD');
         } else {
             clearError(this);
         }
